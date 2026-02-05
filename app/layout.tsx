@@ -4,6 +4,7 @@ import './globals.css';
 import { AppLayout } from '@/components/layout/app-layout';
 import { AuthProvider } from '@/components/auth/auth-provider';
 import { LanguageProvider } from '@/lib/i18n/language-context';
+import { ThemeProvider } from '@/lib/theme/theme-context';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -20,11 +21,13 @@ export default function RootLayout({
   return (
     <html lang="fr">
       <body className={inter.className}>
-        <AuthProvider>
-          <LanguageProvider>
-            <AppLayout>{children}</AppLayout>
-          </LanguageProvider>
-        </AuthProvider>
+        <ThemeProvider>
+          <AuthProvider>
+            <LanguageProvider>
+              <AppLayout>{children}</AppLayout>
+            </LanguageProvider>
+          </AuthProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

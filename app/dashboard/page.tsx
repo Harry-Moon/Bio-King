@@ -189,9 +189,9 @@ function DashboardContent() {
       </div>
 
       {/* Hero Card - Score global */}
-      <div className="rounded-xl border bg-card p-8 shadow-lg">
-        <div className="grid gap-8 lg:grid-cols-2">
-          <div>
+      <div className="rounded-xl border bg-gradient-to-br from-card via-card to-card/80 p-8 shadow-lg backdrop-blur-sm">
+        <div className="grid gap-8 lg:grid-cols-3">
+          <div className="lg:col-span-1">
             <SystemGauge
               chronologicalAge={report.chronologicalAge}
               systemAge={report.overallSystemAge}
@@ -199,46 +199,59 @@ function DashboardContent() {
               agingStage={report.agingStage}
             />
           </div>
-          <div className="flex flex-col justify-center space-y-6">
-            <div>
-              <h2 className="mb-4 text-2xl font-bold">
-                {t('dashboard.overview')}
-              </h2>
-              <div className="space-y-4">
-                <div className="flex items-center justify-between rounded-lg bg-muted/50 p-4">
-                  <span className="text-muted-foreground">
-                    {t('dashboard.chronologicalAge')}
-                  </span>
-                  <span className="text-xl font-bold">
-                    {report.chronologicalAge} {t('common.years')}
-                  </span>
-                </div>
-                <div className="flex items-center justify-between rounded-lg bg-muted/50 p-4">
-                  <span className="text-muted-foreground">
-                    {t('dashboard.biologicalAge')}
-                  </span>
-                  <span className="text-xl font-bold">
-                    {report.overallSystemAge?.toFixed(1) || 0}{' '}
-                    {t('common.years')}
-                  </span>
-                </div>
-                <div className="flex items-center justify-between rounded-lg bg-muted/50 p-4">
-                  <span className="text-muted-foreground">
-                    {t('dashboard.agingSpeed')}
-                  </span>
-                  <span className="text-xl font-bold">
-                    {report.agingRate?.toFixed(2) || 0}x
-                  </span>
-                </div>
-                <div className="flex items-center justify-between rounded-lg bg-muted/50 p-4">
-                  <span className="text-muted-foreground">
-                    {t('dashboard.agingPhase')}
-                  </span>
-                  <span className="text-xl font-bold">
-                    {t(`stages.${report.agingStage.toLowerCase()}`)}
-                  </span>
-                </div>
-              </div>
+
+          <div className="lg:col-span-2 grid gap-4 sm:grid-cols-3">
+            {/* Biological Age - Prominent */}
+            <div className="rounded-xl bg-gradient-to-br from-orange-500/10 to-orange-600/5 border border-orange-500/20 p-5">
+              <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                {t('dashboard.biologicalAge')}
+              </p>
+              <p className="mt-2 text-4xl font-bold text-orange-500">
+                {report.overallSystemAge?.toFixed(1) || 0}
+              </p>
+              <p className="mt-2 text-xs text-muted-foreground">
+                {report.agingRate && report.agingRate > 1
+                  ? `+${(report.agingRate - 1).toFixed(2)}x vs Chronological`
+                  : 'Within normal range'}
+              </p>
+            </div>
+
+            {/* Aging Phase */}
+            <div className="rounded-xl bg-gradient-to-br from-blue-500/10 to-blue-600/5 border border-blue-500/20 p-5">
+              <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                {t('dashboard.agingPhase')}
+              </p>
+              <p className="mt-2 text-3xl font-bold text-blue-500">
+                {t(`stages.${report.agingStage.toLowerCase()}`)}
+              </p>
+              <p className="mt-2 text-xs text-muted-foreground">
+                Stabilité observée
+              </p>
+            </div>
+
+            {/* Aging Speed */}
+            <div className="rounded-xl bg-gradient-to-br from-red-500/10 to-red-600/5 border border-red-500/20 p-5">
+              <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                {t('dashboard.agingSpeed')}
+              </p>
+              <p className="mt-2 text-4xl font-bold text-red-500">
+                {report.agingRate?.toFixed(2) || 0}x
+              </p>
+              <p className="mt-2 text-xs text-muted-foreground">
+                {report.agingRate && report.agingRate > 1
+                  ? 'Accélération'
+                  : 'Normal'}
+              </p>
+            </div>
+
+            {/* Chronological Age */}
+            <div className="rounded-xl bg-gradient-to-br from-slate-500/10 to-slate-600/5 border border-slate-500/20 p-5 sm:col-span-3 lg:col-span-2">
+              <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                {t('dashboard.chronologicalAge')}
+              </p>
+              <p className="mt-2 text-3xl font-bold">
+                {report.chronologicalAge} {t('common.years')}
+              </p>
             </div>
           </div>
         </div>
