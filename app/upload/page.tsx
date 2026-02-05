@@ -3,13 +3,7 @@
 import { useState, useCallback, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useDropzone } from 'react-dropzone';
-import {
-  Upload,
-  FileText,
-  Loader2,
-  CheckCircle2,
-  XCircle,
-} from 'lucide-react';
+import { Upload, FileText, Loader2, CheckCircle2, XCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/components/auth/auth-provider';
 import { useTranslation } from '@/lib/i18n/use-translation';
@@ -116,9 +110,7 @@ export default function UploadPage() {
         <div className="mx-auto max-w-2xl">
           {/* Header */}
           <div className="mb-8 text-center">
-            <h1 className="mb-2 text-4xl font-bold">
-              {t('upload.title')}
-            </h1>
+            <h1 className="mb-2 text-4xl font-bold">{t('upload.title')}</h1>
             <p className="text-lg text-muted-foreground">
               {t('upload.subtitle')}
             </p>
@@ -144,9 +136,7 @@ export default function UploadPage() {
                 </div>
                 <div>
                   <p className="mb-2 text-xl font-semibold">
-                    {isDragActive
-                      ? t('upload.dropHere')
-                      : t('upload.dragHere')}
+                    {isDragActive ? t('upload.dropHere') : t('upload.dragHere')}
                   </p>
                   <p className="text-sm text-muted-foreground">
                     {t('upload.clickToSelect')}
@@ -195,7 +185,9 @@ export default function UploadPage() {
           {status === 'uploading' && (
             <div className="mt-6">
               <div className="mb-2 flex items-center justify-between text-sm">
-                <span className="font-medium">{t('upload.analysisInProgress')}</span>
+                <span className="font-medium">
+                  {t('upload.analysisInProgress')}
+                </span>
                 <span className="text-muted-foreground">{progress}%</span>
               </div>
               <div className="h-2 overflow-hidden rounded-full bg-muted">
@@ -206,9 +198,7 @@ export default function UploadPage() {
               </div>
               <div className="mt-4 flex items-center justify-center gap-2 text-sm text-muted-foreground">
                 <Loader2 className="h-4 w-4 animate-spin" />
-                <span>
-                  {t('upload.extractionTime')}
-                </span>
+                <span>{t('upload.extractionTime')}</span>
               </div>
             </div>
           )}

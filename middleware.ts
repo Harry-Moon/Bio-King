@@ -62,11 +62,11 @@ export async function middleware(req: NextRequest) {
   // Routes qui ne nécessitent pas d'authentification
   const publicPaths = ['/login', '/signup'];
   const apiPaths = ['/api/']; // Toutes les routes API sont gérées en interne
-  
+
   const isPublicPath = publicPaths.some((path) =>
     req.nextUrl.pathname.startsWith(path)
   );
-  
+
   const isApiPath = apiPaths.some((path) =>
     req.nextUrl.pathname.startsWith(path)
   );

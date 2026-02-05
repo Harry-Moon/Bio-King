@@ -3,6 +3,7 @@
 ## 🔴 Problèmes Identifiés
 
 ### 1. **"Upload failed" - Colonne manquante**
+
 **Erreur** : `Could not find the 'original_filename' column`
 
 **Cause** : Le code essayait d'insérer `original_filename` dans la table `systemage_reports`, mais cette colonne n'existait pas dans le schéma Supabase.
@@ -12,9 +13,11 @@
 ---
 
 ### 2. **"Aucun rapport trouvé" après upload**
+
 **Erreur** : Le dashboard affiche "Aucun rapport trouvé" alors que le rapport a bien été créé
 
 **Causes multiples** :
+
 - Le rapport est créé avec `extraction_status: 'pending'`
 - L'API d'extraction est bloquée par le middleware
 - Le dashboard ne convertit pas les données Supabase (snake_case) en camelCase
@@ -22,6 +25,7 @@
 **✅ Solutions** :
 
 #### a) Middleware bloque les routes API
+
 **Problème** : Le fetch interne vers `/api/extract-report` était bloqué par le middleware d'authentification
 
 **Correction** : Ajout d'une exception pour toutes les routes `/api/*` dans `middleware.ts`
@@ -34,6 +38,7 @@ if (isApiPath) {
 ```
 
 #### b) Conversion snake_case ↔ camelCase
+
 **Problème** : Supabase retourne `extraction_status` mais TypeScript attend `extractionStatus`
 
 **Correction** : Création de mappers dans `lib/utils/supabase-mappers.ts`
@@ -52,9 +57,11 @@ Le dashboard utilise maintenant ces mappers pour convertir automatiquement les d
 ---
 
 ### 3. **Multiple GoTrueClient instances**
+
 **Warning** : `Multiple GoTrueClient instances detected in the same browser context`
 
 **Cause** : Deux fichiers créent des clients Supabase différemment :
+
 - `lib/supabase.ts` - `createClient`
 - `lib/auth/supabase-client.ts` - `createBrowserClient`
 
@@ -76,13 +83,13 @@ Maintenant, une seule instance du client est créée côté browser.
 
 ## 📊 État des Corrections
 
-| Problème | Status | Fichiers Modifiés |
-|----------|--------|-------------------|
-| Colonne `original_filename` manquante | ✅ Corrigé | `app/api/upload-pdf/route.ts` |
-| Middleware bloque API | ✅ Corrigé | `middleware.ts` |
-| Conversion snake_case/camelCase | ✅ Corrigé | `lib/utils/supabase-mappers.ts`<br>`app/dashboard/page.tsx` |
-| Multiple instances Supabase | ✅ Corrigé | `lib/supabase.ts` |
-| API Assistants pour extraction | ✅ Implémenté | `lib/openai/assistants.ts`<br>`app/api/extract-report/route.ts` |
+| Problème                              | Status        | Fichiers Modifiés                                               |
+| ------------------------------------- | ------------- | --------------------------------------------------------------- |
+| Colonne `original_filename` manquante | ✅ Corrigé    | `app/api/upload-pdf/route.ts`                                   |
+| Middleware bloque API                 | ✅ Corrigé    | `middleware.ts`                                                 |
+| Conversion snake_case/camelCase       | ✅ Corrigé    | `lib/utils/supabase-mappers.ts`<br>`app/dashboard/page.tsx`     |
+| Multiple instances Supabase           | ✅ Corrigé    | `lib/supabase.ts`                                               |
+| API Assistants pour extraction        | ✅ Implémenté | `lib/openai/assistants.ts`<br>`app/api/extract-report/route.ts` |
 
 ---
 
@@ -142,15 +149,19 @@ tail -f /Users/harry/.cursor/projects/Users-harry-Documents-BioKing/terminals/11
 ### Erreurs possibles
 
 1. **Clé OpenAI invalide**
+
    ```
    Error: Invalid API key
    ```
+
    → Vérifiez `.env.local` : `OPENAI_API_KEY=sk-proj-...`
 
 2. **File upload failed**
+
    ```
    [Assistants] Error creating file
    ```
+
    → Problème avec l'API OpenAI Files
 
 3. **Assistant run timeout**

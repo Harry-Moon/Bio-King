@@ -4,13 +4,13 @@
 
 ### **Erreur** : `SyntaxError: Unexpected token '`'`
 
-```
+````
 [Extract] Error: SyntaxError: Unexpected token '`', "```json
-```
+````
 
 **Cause** : L'Assistant OpenAI retourne le JSON enveloppé dans des balises markdown :
 
-```markdown
+````markdown
 ```json
 {
   "chronologicalAge": 35,
@@ -18,7 +18,9 @@
   ...
 }
 ```
-```
+````
+
+````
 
 Au lieu du JSON pur :
 
@@ -28,7 +30,7 @@ Au lieu du JSON pur :
   "overallSystemAge": 37.5,
   ...
 }
-```
+````
 
 ---
 
@@ -38,7 +40,7 @@ Au lieu du JSON pur :
 
 Ajout d'un nettoyage automatique des balises markdown :
 
-```typescript
+````typescript
 // Nettoyer les balises markdown si présentes
 if (responseText.includes('```json')) {
   const jsonMatch = responseText.match(/```json\s*([\s\S]*?)\s*```/);
@@ -51,7 +53,7 @@ if (responseText.includes('```json')) {
     responseText = jsonMatch[1].trim();
   }
 }
-```
+````
 
 ---
 
@@ -59,13 +61,13 @@ if (responseText.includes('```json')) {
 
 Ajout d'instructions claires pour demander du JSON pur :
 
-```typescript
+````typescript
 CRITICAL OUTPUT FORMAT:
 - Return ONLY the JSON object
 - NO markdown code blocks (no ```json or ```)
 - NO explanations before or after the JSON
 - Start directly with { and end with }
-```
+````
 
 ---
 
@@ -80,7 +82,7 @@ CRITICAL RULES:
 2. Extract ALL recommendations (nutritional, fitness, therapy)
 3. Return ONLY pure JSON (no markdown, no code blocks)
 4. Use null for missing numeric values (not 0)
-`
+`;
 ```
 
 ---
@@ -110,12 +112,14 @@ CRITICAL RULES:
 ### **En cas d'erreur**
 
 Si vous voyez encore :
+
 ```
 [Assistants] Error occurred, cleaning up
 [Extract] Error: SyntaxError...
 ```
 
 C'est que l'Assistant retourne un format inattendu. Dans ce cas :
+
 1. Vérifiez les logs complets
 2. Regardez le contenu exact de la réponse
 3. Ajustez le nettoyage si nécessaire
@@ -129,18 +133,21 @@ C'est que l'Assistant retourne un format inattendu. Dans ce cas :
 Après l'extraction réussie, vous devriez voir :
 
 **Vue d'ensemble** :
+
 - ✅ Âge chronologique : 35 ans (valeur réelle)
 - ✅ Âge biologique : 37.5 ans (valeur réelle)
 - ✅ Vitesse de vieillissement : 1.07x (valeur réelle)
 - ✅ Phase : Plateau (valeur réelle)
 
 **19 Systèmes Corporels** :
+
 - ✅ Brain Health and Cognition : 39.2 ans
 - ✅ Muscular System : 35.8 ans
 - ✅ Blood and Vascular System : 42.1 ans
 - ... (tous les 19 systèmes)
 
 **Recommandations** :
+
 - ✅ **Nutritionnelles** : Quercetin, Omega-3, etc.
 - ✅ **Fitness** : Yoga, HIIT, etc.
 - ✅ **Thérapies** : TPE, etc.
@@ -180,13 +187,13 @@ Pour permettre à l'utilisateur de converser avec l'IA sur son rapport, nous all
 
 ## 💡 Diagnostic Rapide
 
-| Symptôme | Cause Probable | Solution |
-|----------|----------------|----------|
-| Toutes les valeurs à 0.0 | Extraction a échoué | Vérifier les logs d'extraction |
-| Erreur JSON parse | Format markdown | ✅ Corrigé maintenant |
-| Assistant timeout | PDF trop lourd | Réduire la résolution du PDF |
-| Systèmes manquants | Prompt insuffisant | ✅ Prompt amélioré |
-| Pas de recommandations | Extraction partielle | ✅ Prompt amélioré |
+| Symptôme                 | Cause Probable       | Solution                       |
+| ------------------------ | -------------------- | ------------------------------ |
+| Toutes les valeurs à 0.0 | Extraction a échoué  | Vérifier les logs d'extraction |
+| Erreur JSON parse        | Format markdown      | ✅ Corrigé maintenant          |
+| Assistant timeout        | PDF trop lourd       | Réduire la résolution du PDF   |
+| Systèmes manquants       | Prompt insuffisant   | ✅ Prompt amélioré             |
+| Pas de recommandations   | Extraction partielle | ✅ Prompt amélioré             |
 
 ---
 

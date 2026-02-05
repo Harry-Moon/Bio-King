@@ -2,12 +2,12 @@
 
 ## ✅ État Actuel
 
-| Fonctionnalité | Status | Description |
-|----------------|--------|-------------|
-| Upload PDF | ✅ Fonctionne | Upload vers Supabase Storage + BDD |
-| Extraction données | ✅ **Corrigé** | API Assistants avec nettoyage JSON |
-| Dashboard | ✅ Fonctionne | Affichage des 19 systèmes + recommandations |
-| Conversation IA | ✅ **Nouveau** | Chat avec l'IA sur la base du rapport |
+| Fonctionnalité     | Status         | Description                                 |
+| ------------------ | -------------- | ------------------------------------------- |
+| Upload PDF         | ✅ Fonctionne  | Upload vers Supabase Storage + BDD          |
+| Extraction données | ✅ **Corrigé** | API Assistants avec nettoyage JSON          |
+| Dashboard          | ✅ Fonctionne  | Affichage des 19 systèmes + recommandations |
+| Conversation IA    | ✅ **Nouveau** | Chat avec l'IA sur la base du rapport       |
 
 ---
 
@@ -16,6 +16,7 @@
 ### **1. Upload et Extraction Automatique**
 
 **Workflow** :
+
 1. Utilisateur upload un PDF SystemAge
 2. Le PDF est stocké sur Supabase Storage
 3. Un rapport est créé en BDD avec `extraction_status: 'pending'`
@@ -25,6 +26,7 @@
 7. Le dashboard affiche les résultats
 
 **Corrections appliquées** :
+
 - ✅ Nettoyage automatique des balises markdown ```json
 - ✅ Prompt amélioré pour demander du JSON pur
 - ✅ Instructions Assistant plus claires
@@ -34,6 +36,7 @@
 ### **2. Dashboard Interactif**
 
 **Affichage** :
+
 - ✅ **Âge chronologique vs biologique**
 - ✅ **Vitesse de vieillissement** (aging rate)
 - ✅ **Phase de vieillissement** (Prime/Plateau/Accelerated)
@@ -45,6 +48,7 @@
   - Thérapies (traitements médicaux)
 
 **Corrections appliquées** :
+
 - ✅ Conversion snake_case → camelCase
 - ✅ Protection contre les valeurs null/undefined
 - ✅ Affichage "En cours d'extraction"
@@ -56,11 +60,13 @@
 **Nouveau système de chat intelligent** !
 
 L'utilisateur peut maintenant **poser des questions sur son rapport** et recevoir des réponses personnalisées basées sur :
+
 - ✅ Le PDF complet du rapport
 - ✅ Toutes les données extraites (19 systèmes)
 - ✅ Les recommandations personnalisées
 
 **Exemples de questions** :
+
 - "Pourquoi mon système cardiovasculaire vieillit-il plus vite que mon âge chronologique ?"
 - "Quelles sont les 3 recommandations les plus importantes pour moi ?"
 - "Comment puis-je réduire mon BioNoise ?"
@@ -68,6 +74,7 @@ L'utilisateur peut maintenant **poser des questions sur son rapport** et recevoi
 - "Quels exercices sont recommandés pour améliorer mon système musculaire ?"
 
 **Fonctionnalités** :
+
 - ✅ Chat en temps réel
 - ✅ Historique des conversations sauvegardé
 - ✅ Questions suggérées pour démarrer
@@ -95,6 +102,7 @@ tail -f /Users/harry/.cursor/projects/Users-harry-Documents-BioKing/terminals/38
 ```
 
 **Logs de succès** :
+
 ```
 [Upload] Triggering extraction for report xxx
 [Extract] Starting extraction for report xxx
@@ -129,19 +137,23 @@ Pour intégrer le chat dans le dashboard :
 
 1. Ouvrez `app/dashboard/page.tsx`
 2. Ajoutez cet import en haut :
+
    ```typescript
    import { ChatInterface } from '@/components/chat/chat-interface';
    ```
 
 3. Ajoutez le composant dans le JSX (après les recommandations) :
+
    ```tsx
-   {/* Chat avec l'IA */}
+   {
+     /* Chat avec l'IA */
+   }
    <div>
      <h2 className="mb-6 text-2xl font-bold">
        💬 Discutez avec votre Assistant IA
      </h2>
      <ChatInterface reportId={report.id} className="h-[600px]" />
-   </div>
+   </div>;
    ```
 
 4. Rechargez le dashboard
@@ -152,8 +164,8 @@ Pour intégrer le chat dans le dashboard :
 ```
 Vous: Pourquoi mon système cardiovasculaire vieillit-il plus vite ?
 
-IA: D'après votre rapport SystemAge, votre système cardiovasculaire 
-a un âge biologique de 42.1 ans, soit 7.1 ans de plus que votre 
+IA: D'après votre rapport SystemAge, votre système cardiovasculaire
+a un âge biologique de 42.1 ans, soit 7.1 ans de plus que votre
 âge chronologique de 35 ans. Cela peut être dû à plusieurs facteurs...
 
 Vos recommandations personnalisées incluent :
@@ -222,25 +234,25 @@ Affichage dans l'interface de chat
 
 ### **Nouveaux Fichiers**
 
-| Fichier | Description |
-|---------|-------------|
-| `lib/openai/assistants.ts` | API Assistants pour extraction PDF |
-| `lib/utils/supabase-mappers.ts` | Conversion snake_case ↔ camelCase |
-| `app/api/chat/route.ts` | API pour conversation avec l'IA |
-| `components/chat/chat-interface.tsx` | Interface de chat UI |
+| Fichier                              | Description                        |
+| ------------------------------------ | ---------------------------------- |
+| `lib/openai/assistants.ts`           | API Assistants pour extraction PDF |
+| `lib/utils/supabase-mappers.ts`      | Conversion snake_case ↔ camelCase  |
+| `app/api/chat/route.ts`              | API pour conversation avec l'IA    |
+| `components/chat/chat-interface.tsx` | Interface de chat UI               |
 
 ### **Fichiers Modifiés**
 
-| Fichier | Modifications |
-|---------|---------------|
-| `app/api/upload-pdf/route.ts` | Suppression original_filename |
-| `app/api/extract-report/route.ts` | Utilisation API Assistants |
-| `middleware.ts` | Exception routes /api/* |
-| `lib/supabase.ts` | Client singleton (fix multiple instances) |
-| `app/dashboard/page.tsx` | Utilisation mappers + camelCase |
-| `components/dashboard/system-gauge.tsx` | Protection valeurs null |
-| `components/dashboard/system-card.tsx` | Protection valeurs null |
-| `lib/prompts/extraction.ts` | Instructions JSON pur |
+| Fichier                                 | Modifications                             |
+| --------------------------------------- | ----------------------------------------- |
+| `app/api/upload-pdf/route.ts`           | Suppression original_filename             |
+| `app/api/extract-report/route.ts`       | Utilisation API Assistants                |
+| `middleware.ts`                         | Exception routes /api/\*                  |
+| `lib/supabase.ts`                       | Client singleton (fix multiple instances) |
+| `app/dashboard/page.tsx`                | Utilisation mappers + camelCase           |
+| `components/dashboard/system-gauge.tsx` | Protection valeurs null                   |
+| `components/dashboard/system-card.tsx`  | Protection valeurs null                   |
+| `lib/prompts/extraction.ts`             | Instructions JSON pur                     |
 
 ---
 
@@ -327,6 +339,7 @@ Avant de considérer le système "production-ready" :
 **Vous avez maintenant un système complet et fonctionnel !**
 
 **Fonctionnalités** :
+
 - ✅ Upload automatique de PDFs
 - ✅ Extraction intelligente avec OpenAI Assistants
 - ✅ Dashboard avec 19 systèmes corporels

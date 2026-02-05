@@ -3,6 +3,7 @@
 ## Problèmes Identifiés
 
 ### ❌ Problème 1 : Bug dans le gestionnaire d'erreur
+
 **Ligne 191-198 de `app/api/extract-report/route.ts`**
 
 ```typescript
@@ -18,6 +19,7 @@ if (request.body) {
 ---
 
 ### ❌ Problème 2 : Une seule page envoyée au lieu de toutes
+
 **Ligne 67 de `app/api/extract-report/route.ts` (ancien code)**
 
 ```typescript
@@ -33,9 +35,11 @@ image_url: {
 ---
 
 ### ❌ Problème 3 : Format de fichier incompatible (PROBLÈME PRINCIPAL)
+
 **L'API Chat Completions (GPT-4 Vision) ne supporte PAS les PDFs !**
 
 **Formats supportés par GPT-4 Vision** :
+
 - ✅ Images PNG
 - ✅ Images JPEG
 - ✅ Images GIF
@@ -43,14 +47,16 @@ image_url: {
 - ❌ PDFs (même en base64)
 
 **Ce que nous faisions** :
+
 ```typescript
 // ❌ Envoi de PDFs en base64 - NE FONCTIONNE PAS
 image_url: {
-  url: "data:application/pdf;base64,..." // ❌ Rejeté par OpenAI
+  url: 'data:application/pdf;base64,...'; // ❌ Rejeté par OpenAI
 }
 ```
 
 **Pourquoi ça ne marchait pas** :
+
 1. L'API Chat Completions ne peut pas lire les PDFs directement
 2. La conversion "PDF → pages en base64" ne créait pas de vraies images
 3. OpenAI rejetait silencieusement les données ou retournait des résultats vides
@@ -66,6 +72,7 @@ L'API **Assistants** d'OpenAI supporte nativement les fichiers PDF grâce à l'o
 **Nouveau fichier** : `lib/openai/assistants.ts`
 
 **Workflow** :
+
 1. ✅ Upload du PDF vers OpenAI Files API
 2. ✅ Création d'un Assistant temporaire avec accès au PDF
 3. ✅ Création d'un Thread avec le prompt d'extraction
@@ -74,6 +81,7 @@ L'API **Assistants** d'OpenAI supporte nativement les fichiers PDF grâce à l'o
 6. ✅ Nettoyage (suppression de l'assistant et du fichier)
 
 **Avantages** :
+
 - ✅ Supporte nativement les PDFs (pas besoin de conversion)
 - ✅ Peut lire TOUTES les pages du document
 - ✅ Meilleure compréhension contextuelle grâce à file_search
@@ -83,13 +91,13 @@ L'API **Assistants** d'OpenAI supporte nativement les fichiers PDF grâce à l'o
 
 ## 📊 Comparaison : Avant vs Après
 
-| Aspect | ❌ Avant | ✅ Après |
-|--------|---------|----------|
-| API utilisée | Chat Completions (GPT-4 Vision) | Assistants API |
-| Format d'entrée | PDF base64 (incompatible) | PDF natif |
-| Pages analysées | 1 seule page | Toutes les pages |
-| Qualité extraction | Incomplète | Complète |
-| Gestion erreurs | Bug dans catch | Correcte |
+| Aspect             | ❌ Avant                        | ✅ Après         |
+| ------------------ | ------------------------------- | ---------------- |
+| API utilisée       | Chat Completions (GPT-4 Vision) | Assistants API   |
+| Format d'entrée    | PDF base64 (incompatible)       | PDF natif        |
+| Pages analysées    | 1 seule page                    | Toutes les pages |
+| Qualité extraction | Incomplète                      | Complète         |
+| Gestion erreurs    | Bug dans catch                  | Correcte         |
 
 ---
 
@@ -100,6 +108,7 @@ L'API **Assistants** d'OpenAI supporte nativement les fichiers PDF grâce à l'o
 Visitez : `http://localhost:3000/test-openai`
 
 Cliquez sur "Lancer le test" pour vérifier :
+
 - ✅ La clé OPENAI_API_KEY est bien lue
 - ✅ La connexion à OpenAI fonctionne
 - ✅ Le modèle GPT-4o répond correctement
@@ -120,6 +129,7 @@ Cliquez sur "Lancer le test" pour vérifier :
 ### 3. Vérification dans Supabase
 
 Vérifiez que le rapport a bien :
+
 - `extraction_status: 'completed'`
 - `chronological_age`, `overall_system_age`, etc. remplis
 - 19 systèmes corporels dans `body_systems`
@@ -158,17 +168,20 @@ Vérifiez que le rapport a bien :
 ### Coût de l'API Assistants
 
 L'API Assistants est **légèrement plus chère** que Chat Completions :
+
 - File storage: $0.10 / GB / jour
 - File search: quelques cents par recherche
 - GPT-4o inference: même prix que Chat Completions
 
 **Pour un PDF de 5 MB** :
+
 - Storage: ~$0.0005/jour (négligeable, on supprime après)
 - File search + inference: ~$0.02-0.05 par extraction
 
 ### Alternative Future
 
 Si les coûts deviennent un problème, considérer :
+
 1. **Conversion PDF → PNG** avec une librairie serveur (pdf-poppler, ghostscript)
 2. **Hébergement des images temporaires** sur Supabase Storage
 3. **Envoi des images à Chat Completions**

@@ -17,12 +17,12 @@ export function SystemGauge({
   agingStage,
 }: SystemGaugeProps) {
   const { t } = useTranslation();
-  
+
   // Protections contre les valeurs undefined/null
   const safeChronoAge = chronologicalAge || 0;
   const safeSystemAge = systemAge || 0;
   const safeAgingRate = agingRate || 0;
-  
+
   const ageDifference = safeSystemAge - safeChronoAge;
   const percentageValue = (safeSystemAge / 100) * 100;
 
@@ -61,12 +61,19 @@ export function SystemGauge({
       {/* Texte central */}
       <div className="absolute inset-0 flex flex-col items-center justify-center pt-12">
         <div className="text-center">
-          <div className="mb-1 text-5xl font-bold">{safeSystemAge.toFixed(1)}</div>
-          <div className="text-sm text-muted-foreground">{t('dashboard.biologicalYears')}</div>
+          <div className="mb-1 text-5xl font-bold">
+            {safeSystemAge.toFixed(1)}
+          </div>
+          <div className="text-sm text-muted-foreground">
+            {t('dashboard.biologicalYears')}
+          </div>
           <div className="mt-4 text-sm">
             <span className="text-muted-foreground">vs </span>
             <span className="font-semibold">{safeChronoAge}</span>
-            <span className="text-muted-foreground"> {t('dashboard.realYears')}</span>
+            <span className="text-muted-foreground">
+              {' '}
+              {t('dashboard.realYears')}
+            </span>
           </div>
           <div
             className="mt-2 inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-medium"

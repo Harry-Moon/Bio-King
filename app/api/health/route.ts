@@ -35,8 +35,10 @@ export async function GET(req: NextRequest) {
 
   try {
     // Test 1: Connexion Supabase
-    const { data: connectionTest, error: connectionError } =
-      await supabase.from('systemage_reports').select('id').limit(1);
+    const { data: connectionTest, error: connectionError } = await supabase
+      .from('systemage_reports')
+      .select('id')
+      .limit(1);
 
     if (!connectionError) {
       checks.supabase.connection = true;
@@ -56,22 +58,19 @@ export async function GET(req: NextRequest) {
     for (const table of tables) {
       try {
         const { error } = await supabase.from(table).select('id').limit(1);
-        checks.supabase.tables[
-          table as keyof typeof checks.supabase.tables
-        ] = !error;
+        checks.supabase.tables[table as keyof typeof checks.supabase.tables] =
+          !error;
       } catch (err) {
-        checks.supabase.tables[
-          table as keyof typeof checks.supabase.tables
-        ] = false;
+        checks.supabase.tables[table as keyof typeof checks.supabase.tables] =
+          false;
       }
     }
 
     // Test 3: Vérifier le bucket de storage
     try {
       const { data: buckets } = await supabaseAdmin.storage.listBuckets();
-      checks.supabase.storage.bucket_exists = buckets?.some(
-        (b) => b.name === 'systemage-reports'
-      );
+      checks.supabase.storage.bucket_exists =
+        buckets?.some((b) => b.name === 'systemage-reports') ?? false;
     } catch (err) {
       checks.supabase.storage.bucket_exists = false;
     }

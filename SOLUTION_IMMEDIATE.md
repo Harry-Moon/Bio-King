@@ -9,12 +9,14 @@
 Cette page vérifie automatiquement **toute votre configuration** :
 
 #### ✓ Variables d'Environnement
+
 - NEXT_PUBLIC_SUPABASE_URL
-- NEXT_PUBLIC_SUPABASE_ANON_KEY  
+- NEXT_PUBLIC_SUPABASE_ANON_KEY
 - SUPABASE_SERVICE_ROLE_KEY
 - OPENAI_API_KEY
 
 #### ✓ Base de Données Supabase
+
 - Connexion à Supabase
 - Table `systemage_reports`
 - Table `body_systems`
@@ -23,6 +25,7 @@ Cette page vérifie automatiquement **toute votre configuration** :
 - Bucket `systemage-reports` (Storage)
 
 #### ✓ OpenAI API
+
 - Connexion à l'API
 - Modèle GPT-4o disponible
 
@@ -69,6 +72,7 @@ POST /api/upload-pdf 200 in 2269ms  ✅
 ```
 
 **Ce qui fonctionne** :
+
 - ✅ Authentification
 - ✅ Upload de fichiers
 - ✅ Sauvegarde dans Supabase Storage
@@ -76,6 +80,7 @@ POST /api/upload-pdf 200 in 2269ms  ✅
 - ✅ Déclenchement de l'extraction
 
 **Ce qui manque probablement** :
+
 - ❓ Configuration OpenAI (clé API)
 - ❓ L'extraction ne se termine pas
 - ❓ Ou l'extraction fonctionne mais vous n'actualisez pas
@@ -124,6 +129,7 @@ cat .env.local
 ```
 
 Vous devriez voir :
+
 ```
 NEXT_PUBLIC_SUPABASE_URL=https://...
 NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJ...
@@ -166,6 +172,7 @@ SELECT COUNT(*) FROM recommendations;
 **Cause** : Vous n'avez pas encore uploadé de rapport, ou l'extraction n'est pas terminée.
 
 **Solution** :
+
 1. Allez sur `/upload`
 2. Uploadez un PDF
 3. Attendez 60 secondes
@@ -176,6 +183,7 @@ SELECT COUNT(*) FROM recommendations;
 **Cause** : OpenAI prend du temps ou il y a une erreur.
 
 **Solution** :
+
 1. Vérifiez les logs du terminal
 2. Vérifiez votre crédit OpenAI
 3. Attendez 2-3 minutes (l'extraction peut prendre du temps)
@@ -185,10 +193,12 @@ SELECT COUNT(*) FROM recommendations;
 **Cause** : Clé API manquante ou invalide.
 
 **Solution** :
+
 1. Vérifiez `.env.local`
 2. Obtenez une clé sur [https://platform.openai.com/api-keys](https://platform.openai.com/api-keys)
 3. Ajoutez `OPENAI_API_KEY=sk-...`
 4. Redémarrez le serveur :
+
 ```bash
 # Ctrl+C pour arrêter
 rm -rf .next
@@ -200,6 +210,7 @@ npm run dev
 **Cause** : Scripts SQL non exécutés.
 
 **Solution** :
+
 1. Allez sur Supabase > SQL Editor
 2. Copiez le contenu de `supabase/migrations/001_create_systemage_schema.sql`
 3. Exécutez (Run)
@@ -212,16 +223,16 @@ npm run dev
 
 D'après les logs, votre système est **partiellement fonctionnel** :
 
-| Composant | État | Détails |
-|-----------|------|---------|
-| Next.js | ✅ | Tourne sur port 3000 |
-| Authentification | ✅ | Login fonctionne |
-| Upload | ✅ | Fichiers uploadés avec succès |
-| Supabase Storage | ✅ | PDFs sauvegardés |
-| Database Write | ✅ | Rapports créés |
-| Extraction | ❓ | Déclenchée mais statut inconnu |
-| OpenAI | ❓ | À vérifier sur /diagnostic |
-| Dashboard | ❌ | Erreur 406 (aucun rapport trouvé) |
+| Composant        | État | Détails                           |
+| ---------------- | ---- | --------------------------------- |
+| Next.js          | ✅   | Tourne sur port 3000              |
+| Authentification | ✅   | Login fonctionne                  |
+| Upload           | ✅   | Fichiers uploadés avec succès     |
+| Supabase Storage | ✅   | PDFs sauvegardés                  |
+| Database Write   | ✅   | Rapports créés                    |
+| Extraction       | ❓   | Déclenchée mais statut inconnu    |
+| OpenAI           | ❓   | À vérifier sur /diagnostic        |
+| Dashboard        | ❌   | Erreur 406 (aucun rapport trouvé) |
 
 ---
 
