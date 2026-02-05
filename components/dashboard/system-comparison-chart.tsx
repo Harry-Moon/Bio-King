@@ -23,10 +23,10 @@ interface SystemComparisonChartProps {
 }
 
 const categoryColors: Record<Category, string> = {
-  need_attention: '#F97316', // orange
-  normal: '#FACC15', // yellow
-  good: '#65A30D', // green
-  excellent: '#60A5FA', // blue
+  excellent: '#39C5EB', // Blue
+  good: '#B7EBB4', // Green
+  normal: '#F9CD71', // Yellow
+  need_attention: '#D64219', // Red/Orange
 };
 
 // Removed - using translations instead
@@ -79,11 +79,11 @@ export function SystemComparisonChart({
         </div>
       </div>
 
-      <div className="h-[380px] w-full">
+      <div className="h-[550px] w-full">
         <ResponsiveContainer width="100%" height="100%">
           <BarChart
             data={chartData}
-            margin={{ top: 30, right: 20, left: 0, bottom: 100 }}
+            margin={{ top: 30, right: 20, left: 0, bottom: 140 }}
           >
             <CartesianGrid
               strokeDasharray="3 3"
@@ -93,10 +93,10 @@ export function SystemComparisonChart({
             <XAxis
               dataKey="name"
               interval={0}
-              angle={-45}
+              angle={-60}
               textAnchor="end"
-              height={100}
-              tick={{ fontSize: 11, fill: '#64748b' }}
+              height={130}
+              tick={{ fontSize: 10, fill: '#64748b' }}
             />
             <YAxis tick={{ fontSize: 12, fill: '#64748b' }} />
             <Tooltip
@@ -105,9 +105,10 @@ export function SystemComparisonChart({
                 'SystemAge',
               ]}
               contentStyle={{
-                backgroundColor: 'white',
-                border: '1px solid #e2e8f0',
+                backgroundColor: 'hsl(var(--card))',
+                border: '1px solid hsl(var(--border))',
                 borderRadius: '8px',
+                color: 'hsl(var(--foreground))',
               }}
             />
             <ReferenceLine
