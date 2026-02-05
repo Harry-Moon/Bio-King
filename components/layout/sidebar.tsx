@@ -74,10 +74,10 @@ export function Sidebar() {
   const pathname = usePathname();
 
   return (
-    <aside className="hidden h-screen w-64 border-r bg-white md:block">
+    <aside className="hidden h-screen w-64 border-r border-border bg-card md:block">
       <div className="flex h-full flex-col">
         {/* Logo / Titre */}
-        <div className="border-b p-6">
+        <div className="border-b border-border p-6">
           <h1 className="text-2xl font-bold text-primary">BioKing</h1>
         </div>
 
@@ -106,12 +106,12 @@ export function Sidebar() {
         </nav>
 
         {/* Language Selector */}
-        <div className="border-t p-4">
+        <div className="border-t border-border p-4">
           <LanguageSelector />
         </div>
 
         {/* User Menu */}
-        <div className="border-t p-4">
+        <div className="border-t border-border p-4">
           <UserMenu />
         </div>
       </div>

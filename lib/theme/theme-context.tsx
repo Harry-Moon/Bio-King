@@ -38,11 +38,14 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 
     setIsDark(shouldBeDark);
 
+    // Appliquer la classe dark au HTML element
     const html = document.documentElement;
     if (shouldBeDark) {
       html.classList.add('dark');
+      document.body.classList.add('dark');
     } else {
       html.classList.remove('dark');
+      document.body.classList.remove('dark');
     }
   }, [theme, mounted]);
 
