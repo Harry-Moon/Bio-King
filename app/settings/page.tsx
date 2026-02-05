@@ -68,7 +68,7 @@ export default function SettingsPage() {
             </div>
           </div>
         </div>
-        <div className="rounded-lg border bg-white p-6 shadow-sm">
+        <div className="rounded-lg border bg-card p-6 shadow-sm">
           <h2 className="mb-4 text-xl font-semibold">Notifications</h2>
           <div className="space-y-4">
             <div className="flex items-center justify-between">
@@ -91,7 +91,7 @@ export default function SettingsPage() {
             </div>
           </div>
         </div>
-        <div className="rounded-lg border bg-white p-6 shadow-sm">
+        <div className="rounded-lg border bg-card p-6 shadow-sm">
           <h2 className="mb-4 text-xl font-semibold">Confidentialité</h2>
           <div className="space-y-4">
             <div className="flex items-center justify-between">
