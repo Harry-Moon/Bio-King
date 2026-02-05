@@ -69,7 +69,10 @@ export async function GET(req: NextRequest) {
       try {
         const pdfResponse = await fetch(report.pdf_url, { method: 'HEAD' });
         console.log('[Test] PDF accessible:', pdfResponse.ok);
-        console.log('[Test] PDF size:', pdfResponse.headers.get('content-length'));
+        console.log(
+          '[Test] PDF size:',
+          pdfResponse.headers.get('content-length')
+        );
       } catch (fetchError) {
         console.error('[Test] ❌ PDF not accessible:', fetchError);
         throw new Error('PDF URL is not accessible');
@@ -94,7 +97,10 @@ export async function GET(req: NextRequest) {
         });
 
         const extractData = await extractResponse.json();
-        console.log('[Test] Extraction API response status:', extractResponse.status);
+        console.log(
+          '[Test] Extraction API response status:',
+          extractResponse.status
+        );
         console.log('[Test] Extraction API response:', extractData);
 
         if (!extractResponse.ok) {

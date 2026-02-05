@@ -19,6 +19,7 @@ Le serveur tourne maintenant sur : **http://localhost:3002**
 3. Vous verrez si OpenAI fonctionne ✅ ou non ❌
 
 Cette page va :
+
 - ✓ Vérifier les variables d'environnement
 - ✓ Faire un appel de test à OpenAI
 - ✓ Vous dire exactement ce qui ne va pas
@@ -53,7 +54,7 @@ curl "http://localhost:3002/api/test-extraction?reportId=VOTRE-REPORT-ID"
 
 Vous avez maintenant 3 pages de debug :
 
-1. **http://localhost:3002/diagnostic** 
+1. **http://localhost:3002/diagnostic**
    → Vérifie toute la configuration (DB, Storage, OpenAI)
 
 2. **http://localhost:3002/test-openai**
@@ -129,6 +130,7 @@ Cliquer sur "Lancer le test" → Devrait être vert ✅
 Dans le terminal, vous devriez voir les logs d'extraction.
 
 Dans Supabase :
+
 1. Table Editor > `systemage_reports`
 2. Regardez la colonne `extraction_status`
    - `pending` → Pas encore commencé
@@ -152,6 +154,7 @@ cat .env.local | grep OPENAI
 ```
 
 Devrait afficher :
+
 ```
 OPENAI_API_KEY=sk-proj-...
 ```

@@ -19,9 +19,7 @@ export const getOpenAIClient = () => {
     }
 
     if (!process.env.OPENAI_API_KEY) {
-      throw new Error(
-        'OPENAI_API_KEY is not defined in environment variables'
-      );
+      throw new Error('OPENAI_API_KEY is not defined in environment variables');
     }
 
     openaiInstance = new OpenAI({

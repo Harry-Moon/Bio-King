@@ -19,11 +19,11 @@ let supabaseInstance: ReturnType<typeof createBrowserClient> | null = null;
 
 export const supabase =
   typeof window !== 'undefined'
-    ? (supabaseInstance ||
+    ? supabaseInstance ||
       (supabaseInstance = createBrowserClient(
         process.env.NEXT_PUBLIC_SUPABASE_URL!,
         process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-      )))
+      ))
     : createClient(
         process.env.NEXT_PUBLIC_SUPABASE_URL,
         process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY

@@ -31,20 +31,21 @@ export async function convertPdfToImages(pdfBuffer: Buffer): Promise<string[]> {
 
     // Extraire chaque page individuellement
     const images: string[] = [];
-    
+
     for (let i = 0; i < pageCount; i++) {
       try {
         // Créer un nouveau document avec une seule page
         const singlePageDoc = await PDFDocument.create();
         const [copiedPage] = await singlePageDoc.copyPages(pdfDoc, [i]);
         singlePageDoc.addPage(copiedPage);
-        
+
         // Convertir en bytes puis en base64
         const singlePageBytes = await singlePageDoc.save();
-        const singlePageBase64 = Buffer.from(singlePageBytes).toString('base64');
-        
+        const singlePageBase64 =
+          Buffer.from(singlePageBytes).toString('base64');
+
         images.push(`data:application/pdf;base64,${singlePageBase64}`);
-        
+
         console.log(`[PDF] Converted page ${i + 1}/${pageCount}`);
       } catch (pageError) {
         console.error(`[PDF] Failed to extract page ${i + 1}:`, pageError);
@@ -60,7 +61,9 @@ export async function convertPdfToImages(pdfBuffer: Buffer): Promise<string[]> {
     return images;
   } catch (error) {
     console.error('Error converting PDF to images:', error);
-    throw new Error(`Failed to process PDF: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    throw new Error(
+      `Failed to process PDF: ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
   }
 }
 

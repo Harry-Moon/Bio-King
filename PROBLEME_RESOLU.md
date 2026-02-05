@@ -17,6 +17,7 @@ OPENAI_API_KEY=sk-proj-FVJx...
 Le fichier `.env.local` a été modifié ou écrasé, vidant la valeur de `OPENAI_API_KEY`.
 
 C'est pour ça que vous voyiez l'erreur :
+
 ```
 Error: OPENAI_API_KEY is not set in environment variables
 ```
@@ -43,6 +44,7 @@ Cliquez sur "Lancer le test" → Devrait être VERT ✅
 3. Regardez les logs dans votre terminal
 
 Vous devriez voir :
+
 ```
 [Upload] Uploading PDF...
 [Extract] Starting extraction...
@@ -81,6 +83,7 @@ nano .env.example
 ```
 
 Contenu de `.env.example` :
+
 ```bash
 # Application
 NEXT_PUBLIC_APP_URL=http://localhost:3000
@@ -96,6 +99,7 @@ OPENAI_API_KEY=sk-proj-VOTRE_CLE_OPENAI_ICI
 ```
 
 Puis :
+
 ```bash
 git add .env.example
 git commit -m "Add env example"

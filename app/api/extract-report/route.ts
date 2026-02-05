@@ -15,7 +15,7 @@ import type { ExtractedSystemAgeData } from '@/lib/types/systemage';
  */
 export async function POST(request: NextRequest) {
   let reportId: string | undefined;
-  
+
   try {
     const body = await request.json();
     const { reportId: extractReportId, pdfUrl, userId } = body;
@@ -62,7 +62,9 @@ export async function POST(request: NextRequest) {
 
     const normalizeSystems = (systems: any[], chronologicalAge: number) =>
       systems.map((system) => {
-        const systemAge = Number(system.systemAge ?? system.system_age ?? system.age);
+        const systemAge = Number(
+          system.systemAge ?? system.system_age ?? system.age
+        );
         const ageDifference =
           system.ageDifference ??
           system.age_difference ??
@@ -91,48 +93,27 @@ export async function POST(request: NextRequest) {
             system.agingRate ??
             system.aging_rate ??
             null,
-          percentileRank: system.percentileRank ?? system.percentile_rank ?? null,
+          percentileRank:
+            system.percentileRank ?? system.percentile_rank ?? null,
         };
       });
 
     const normalizedData = {
-      chronologicalAge:
-        extractedData.chronologicalAge ??
-        extractedData.chronological_age ??
-        0,
-      overallSystemAge:
-        extractedData.overallSystemAge ??
-        extractedData.overall_system_age ??
-        0,
-      agingRate: extractedData.agingRate ?? extractedData.aging_rate ?? 0,
-      agingStage: extractedData.agingStage ?? extractedData.aging_stage ?? 'Plateau',
-      overallBioNoise:
-        extractedData.overallBioNoise ?? extractedData.overall_bionoise ?? null,
+      chronologicalAge: extractedData.chronologicalAge ?? 0,
+      overallSystemAge: extractedData.overallSystemAge ?? 0,
+      agingRate: extractedData.agingRate ?? 0,
+      agingStage: extractedData.agingStage ?? 'Plateau',
+      overallBioNoise: extractedData.overallBioNoise ?? null,
       bodySystems: normalizeSystems(
-        extractedData.bodySystems ??
-          extractedData.body_systems ??
-          extractedData.systems ??
-          [],
-        extractedData.chronologicalAge ?? extractedData.chronological_age ?? 0
+        extractedData.bodySystems ?? [],
+        extractedData.chronologicalAge ?? 0
       ),
       recommendations: {
-        nutritional:
-          extractedData.recommendations?.nutritional ??
-          extractedData.recommendations?.nutrition ??
-          [],
-        fitness:
-          extractedData.recommendations?.fitness ??
-          extractedData.recommendations?.exercise ??
-          [],
-        therapy:
-          extractedData.recommendations?.therapy ??
-          extractedData.recommendations?.therapies ??
-          [],
+        nutritional: extractedData.recommendations.nutritional ?? [],
+        fitness: extractedData.recommendations.fitness ?? [],
+        therapy: extractedData.recommendations.therapy ?? [],
       },
-      topAgingFactors:
-        extractedData.topAgingFactors ??
-        extractedData.top_aging_factors ??
-        [],
+      topAgingFactors: extractedData.topAgingFactors ?? [],
     };
 
     // 5. Valider les données extraites
@@ -244,12 +225,12 @@ export async function POST(request: NextRequest) {
       try {
         await supabaseAdmin
           .from('systemage_reports')
-          .update({ 
+          .update({
             extraction_status: 'failed',
-            raw_extraction_data: { 
+            raw_extraction_data: {
               error: error instanceof Error ? error.message : 'Unknown error',
-              timestamp: new Date().toISOString()
-            }
+              timestamp: new Date().toISOString(),
+            },
           })
           .eq('id', reportId);
       } catch (updateError) {

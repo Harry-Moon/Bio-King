@@ -130,7 +130,7 @@ export default function DiagnosticPage() {
             </h2>
             <p className="text-muted-foreground">
               {allGood
-                ? "Tous les services sont opérationnels"
+                ? 'Tous les services sont opérationnels'
                 : 'Certains services nécessitent votre attention'}
             </p>
           </div>
@@ -291,7 +291,8 @@ export default function DiagnosticPage() {
 
       {/* Timestamp */}
       <div className="text-center text-sm text-muted-foreground">
-        Dernière vérification : {new Date(health.checks.timestamp).toLocaleString('fr-FR')}
+        Dernière vérification :{' '}
+        {new Date(health.checks.timestamp).toLocaleString('fr-FR')}
       </div>
     </div>
   );

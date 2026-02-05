@@ -7,10 +7,14 @@
 **Ligne** : `app/dashboard/page.tsx:213`
 
 ```typescript
-{report.overall_system_age.toFixed(1)} ans  // ❌ Erreur
+{
+  report.overall_system_age.toFixed(1);
+}
+ans; // ❌ Erreur
 ```
 
 **Causes** :
+
 1. ❌ Utilisation de `snake_case` (`overall_system_age`) au lieu de `camelCase` (`overallSystemAge`)
 2. ❌ Pas de protection si la valeur est `undefined` ou `null`
 
@@ -27,33 +31,43 @@
 #### a) Conversion des propriétés snake_case → camelCase
 
 **Avant** :
+
 ```typescript
-report.chronological_age
-report.overall_system_age
-report.aging_rate
-report.aging_stage
-report.extraction_status
+report.chronological_age;
+report.overall_system_age;
+report.aging_rate;
+report.aging_stage;
+report.extraction_status;
 ```
 
 **Après** :
+
 ```typescript
-report.chronologicalAge
-report.overallSystemAge
-report.agingRate
-report.agingStage
-report.extractionStatus
+report.chronologicalAge;
+report.overallSystemAge;
+report.agingRate;
+report.agingStage;
+report.extractionStatus;
 ```
 
 #### b) Ajout de protections contre `undefined`/`null`
 
 **Avant** :
+
 ```typescript
-{report.overall_system_age.toFixed(1)} ans  // ❌ Crash si undefined
+{
+  report.overall_system_age.toFixed(1);
+}
+ans; // ❌ Crash si undefined
 ```
 
 **Après** :
+
 ```typescript
-{report.overallSystemAge?.toFixed(1) || 0} ans  // ✅ Safe
+{
+  report.overallSystemAge?.toFixed(1) || 0;
+}
+ans; // ✅ Safe
 ```
 
 ---
@@ -89,12 +103,12 @@ const systemAge = system.systemAge || 0;
 
 ## 📊 Résumé des Fichiers Modifiés
 
-| Fichier | Modifications |
-|---------|---------------|
-| `app/dashboard/page.tsx` | ✅ Tous les `snake_case` → `camelCase`<br>✅ Protection avec `?.toFixed()` |
-| `components/dashboard/system-gauge.tsx` | ✅ Variables safe pour éviter crashes |
-| `components/dashboard/system-card.tsx` | ✅ Variables safe pour éviter crashes |
-| `lib/utils/supabase-mappers.ts` | ✅ Déjà créé précédemment |
+| Fichier                                 | Modifications                                                              |
+| --------------------------------------- | -------------------------------------------------------------------------- |
+| `app/dashboard/page.tsx`                | ✅ Tous les `snake_case` → `camelCase`<br>✅ Protection avec `?.toFixed()` |
+| `components/dashboard/system-gauge.tsx` | ✅ Variables safe pour éviter crashes                                      |
+| `components/dashboard/system-card.tsx`  | ✅ Variables safe pour éviter crashes                                      |
+| `lib/utils/supabase-mappers.ts`         | ✅ Déjà créé précédemment                                                  |
 
 ---
 
@@ -124,6 +138,7 @@ Une fois l'extraction terminée, le dashboard doit afficher :
 - ✅ **Phase** : Plateau
 
 ✅ **Pas d'erreur** car :
+
 - On utilise `camelCase` (`overallSystemAge`, `agingRate`, etc.)
 - On protège avec `?.toFixed()` ou `|| 0`
 
@@ -147,6 +162,7 @@ Les cartes de systèmes affichent :
 ### **Problème de Convention**
 
 **Supabase** : Utilise `snake_case` (standard SQL)
+
 ```sql
 CREATE TABLE systemage_reports (
   chronological_age NUMERIC,
@@ -156,6 +172,7 @@ CREATE TABLE systemage_reports (
 ```
 
 **TypeScript** : Utilise `camelCase` (standard JavaScript)
+
 ```typescript
 interface SystemAgeReport {
   chronologicalAge: number;
@@ -172,7 +189,7 @@ On convertit les données à la frontière (quand on les récupère de Supabase)
 // lib/utils/supabase-mappers.ts
 export function mapSupabaseReport(data: any): SystemAgeReport {
   return {
-    chronologicalAge: data.chronological_age,  // snake → camel
+    chronologicalAge: data.chronological_age, // snake → camel
     overallSystemAge: data.overall_system_age,
     agingRate: data.aging_rate,
     // ...
@@ -183,7 +200,7 @@ export function mapSupabaseReport(data: any): SystemAgeReport {
 Puis dans le dashboard :
 
 ```typescript
-const latestReport = mapSupabaseReport(reports[0]);  // ✅ Conversion
+const latestReport = mapSupabaseReport(reports[0]); // ✅ Conversion
 setReport(latestReport);
 ```
 
@@ -191,14 +208,14 @@ setReport(latestReport);
 
 ## ✅ État Actuel
 
-| Aspect | Status |
-|--------|--------|
-| Upload PDF | ✅ Fonctionne |
-| Création rapport en BDD | ✅ Fonctionne |
-| Déclenchement extraction | ✅ Fonctionne |
-| Dashboard affiche "En cours" | ✅ Fonctionne |
-| Dashboard affiche résultats | ✅ **Devrait fonctionner maintenant** |
-| Pas d'erreurs `.toFixed()` | ✅ **Corrigé** |
+| Aspect                       | Status                                |
+| ---------------------------- | ------------------------------------- |
+| Upload PDF                   | ✅ Fonctionne                         |
+| Création rapport en BDD      | ✅ Fonctionne                         |
+| Déclenchement extraction     | ✅ Fonctionne                         |
+| Dashboard affiche "En cours" | ✅ Fonctionne                         |
+| Dashboard affiche résultats  | ✅ **Devrait fonctionner maintenant** |
+| Pas d'erreurs `.toFixed()`   | ✅ **Corrigé**                        |
 
 ---
 
@@ -220,6 +237,7 @@ tail -f /Users/harry/.cursor/projects/Users-harry-Documents-BioKing/terminals/38
 ```
 
 Recherchez :
+
 - `[Assistants] File uploaded`
 - `[Assistants] Run status: completed`
 - `[Extract] Successfully extracted`

@@ -13,12 +13,14 @@ export async function extractSystemAgeDataWithAssistants(
   const openai = getOpenAIClient();
 
   console.log('[Assistants] Creating file upload');
-  
+
   // 1. Uploader le fichier vers OpenAI
   // Convertir le Buffer en Blob pour OpenAI (compatible Node.js et browser)
   const uint8Array = new Uint8Array(pdfBuffer);
-  const pdfFile = new File([uint8Array], 'report.pdf', { type: 'application/pdf' });
-  
+  const pdfFile = new File([uint8Array], 'report.pdf', {
+    type: 'application/pdf',
+  });
+
   const file = await openai.files.create({
     file: pdfFile,
     purpose: 'assistants',
@@ -81,7 +83,9 @@ The output MUST be valid JSON starting with { and ending with }`,
     // 5. Récupérer les messages
     console.log('[Assistants] Retrieving messages');
     const messages = await openai.beta.threads.messages.list(thread.id);
-    const assistantMessage = messages.data.find((msg) => msg.role === 'assistant');
+    const assistantMessage = messages.data.find(
+      (msg) => msg.role === 'assistant'
+    );
 
     if (!assistantMessage || !assistantMessage.content[0]) {
       throw new Error('No response from assistant');
@@ -95,7 +99,7 @@ The output MUST be valid JSON starting with { and ending with }`,
 
     console.log('[Assistants] Parsing response');
     let responseText = content.text.value;
-    
+
     // Nettoyer les balises markdown si présentes
     // L'assistant peut retourner ```json ... ``` au lieu du JSON pur
     if (responseText.includes('```json')) {
@@ -109,7 +113,7 @@ The output MUST be valid JSON starting with { and ending with }`,
         responseText = jsonMatch[1].trim();
       }
     }
-    
+
     console.log('[Assistants] Cleaned response length:', responseText.length);
     const extractedData: ExtractedSystemAgeData = JSON.parse(responseText);
 

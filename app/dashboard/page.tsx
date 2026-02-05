@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/components/auth/auth-provider';
@@ -21,7 +21,7 @@ import type {
 } from '@/lib/types/systemage';
 import { useTranslation } from '@/lib/i18n/use-translation';
 
-export default function DashboardPage() {
+function DashboardContent() {
   const searchParams = useSearchParams();
   const reportId = searchParams.get('reportId');
   const { user, loading: authLoading } = useAuth();
@@ -44,7 +44,7 @@ export default function DashboardPage() {
           const { data: reports, error: reportError } = await supabase
             .from('systemage_reports')
             .select('*')
-            .eq('user_id', user.id)
+            .eq('user_id', user?.id || '')
             .order('upload_date', { ascending: false })
             .limit(1);
 
@@ -65,7 +65,7 @@ export default function DashboardPage() {
             .from('systemage_reports')
             .select('*')
             .eq('id', reportId)
-            .eq('user_id', user.id)
+            .eq('user_id', user?.id || '')
             .maybeSingle();
 
           if (reportError) throw reportError;
@@ -114,9 +114,7 @@ export default function DashboardPage() {
       <div className="flex min-h-screen items-center justify-center">
         <div className="text-center">
           <Loader2 className="mx-auto mb-4 h-12 w-12 animate-spin text-primary" />
-          <p className="text-muted-foreground">
-            {t('common.loading')}...
-          </p>
+          <p className="text-muted-foreground">{t('common.loading')}...</p>
         </div>
       </div>
     );
@@ -127,7 +125,9 @@ export default function DashboardPage() {
       <div className="flex min-h-screen items-center justify-center px-4">
         <div className="max-w-md text-center">
           <AlertTriangle className="mx-auto mb-4 h-16 w-16 text-yellow-500" />
-          <h2 className="mb-3 text-2xl font-bold">{t('dashboard.noReportFound')}</h2>
+          <h2 className="mb-3 text-2xl font-bold">
+            {t('dashboard.noReportFound')}
+          </h2>
           <p className="mb-6 text-muted-foreground">
             {error || t('dashboard.reportNotFoundDesc')}
           </p>
@@ -151,7 +151,9 @@ export default function DashboardPage() {
       <div className="flex min-h-screen items-center justify-center">
         <div className="text-center">
           <Loader2 className="mx-auto mb-4 h-12 w-12 animate-spin text-primary" />
-          <h2 className="mb-2 text-xl font-semibold">{t('dashboard.analysisInProgress')}</h2>
+          <h2 className="mb-2 text-xl font-semibold">
+            {t('dashboard.analysisInProgress')}
+          </h2>
           <p className="text-muted-foreground">
             {t('dashboard.analysisInProgressDesc')}
             <br />
@@ -187,9 +189,9 @@ export default function DashboardPage() {
       </div>
 
       {/* Hero Card - Score global */}
-      <div className="rounded-xl border bg-card p-8 shadow-lg">
-        <div className="grid gap-8 lg:grid-cols-2">
-          <div>
+      <div className="rounded-xl border bg-gradient-to-br from-card via-card to-card/80 p-8 shadow-lg backdrop-blur-sm">
+        <div className="grid gap-8 lg:grid-cols-3">
+          <div className="lg:col-span-1">
             <SystemGauge
               chronologicalAge={report.chronologicalAge}
               systemAge={report.overallSystemAge}
@@ -197,41 +199,59 @@ export default function DashboardPage() {
               agingStage={report.agingStage}
             />
           </div>
-          <div className="flex flex-col justify-center space-y-6">
-            <div>
-              <h2 className="mb-4 text-2xl font-bold">{t('dashboard.overview')}</h2>
-              <div className="space-y-4">
-                <div className="flex items-center justify-between rounded-lg bg-muted/50 p-4">
-                  <span className="text-muted-foreground">
-                    {t('dashboard.chronologicalAge')}
-                  </span>
-                  <span className="text-xl font-bold">
-                    {report.chronologicalAge} {t('common.years')}
-                  </span>
-                </div>
-                <div className="flex items-center justify-between rounded-lg bg-muted/50 p-4">
-                  <span className="text-muted-foreground">{t('dashboard.biologicalAge')}</span>
-                  <span className="text-xl font-bold">
-                    {report.overallSystemAge?.toFixed(1) || 0} {t('common.years')}
-                  </span>
-                </div>
-                <div className="flex items-center justify-between rounded-lg bg-muted/50 p-4">
-                  <span className="text-muted-foreground">
-                    {t('dashboard.agingSpeed')}
-                  </span>
-                  <span className="text-xl font-bold">
-                    {report.agingRate?.toFixed(2) || 0}x
-                  </span>
-                </div>
-                <div className="flex items-center justify-between rounded-lg bg-muted/50 p-4">
-                  <span className="text-muted-foreground">
-                    {t('dashboard.agingPhase')}
-                  </span>
-                  <span className="text-xl font-bold">
-                    {t(`stages.${report.agingStage.toLowerCase()}`)}
-                  </span>
-                </div>
-              </div>
+
+          <div className="lg:col-span-2 grid gap-4 sm:grid-cols-3">
+            {/* Biological Age - Prominent */}
+            <div className="rounded-xl bg-gradient-to-br from-orange-500/10 to-orange-600/5 border border-orange-500/20 p-5">
+              <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                {t('dashboard.biologicalAge')}
+              </p>
+              <p className="mt-2 text-4xl font-bold text-orange-500">
+                {report.overallSystemAge?.toFixed(1) || 0}
+              </p>
+              <p className="mt-2 text-xs text-muted-foreground">
+                {report.agingRate && report.agingRate > 1
+                  ? `+${(report.agingRate - 1).toFixed(2)}x vs Chronological`
+                  : 'Within normal range'}
+              </p>
+            </div>
+
+            {/* Aging Phase */}
+            <div className="rounded-xl bg-gradient-to-br from-blue-500/10 to-blue-600/5 border border-blue-500/20 p-5">
+              <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                {t('dashboard.agingPhase')}
+              </p>
+              <p className="mt-2 text-3xl font-bold text-blue-500">
+                {t(`stages.${report.agingStage.toLowerCase()}`)}
+              </p>
+              <p className="mt-2 text-xs text-muted-foreground">
+                Stabilité observée
+              </p>
+            </div>
+
+            {/* Aging Speed */}
+            <div className="rounded-xl bg-gradient-to-br from-red-500/10 to-red-600/5 border border-red-500/20 p-5">
+              <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                {t('dashboard.agingSpeed')}
+              </p>
+              <p className="mt-2 text-4xl font-bold text-red-500">
+                {report.agingRate?.toFixed(2) || 0}x
+              </p>
+              <p className="mt-2 text-xs text-muted-foreground">
+                {report.agingRate && report.agingRate > 1
+                  ? 'Accélération'
+                  : 'Normal'}
+              </p>
+            </div>
+
+            {/* Chronological Age */}
+            <div className="rounded-xl bg-gradient-to-br from-slate-500/10 to-slate-600/5 border border-slate-500/20 p-5 sm:col-span-3 lg:col-span-2">
+              <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                {t('dashboard.chronologicalAge')}
+              </p>
+              <p className="mt-2 text-3xl font-bold">
+                {report.chronologicalAge} {t('common.years')}
+              </p>
             </div>
           </div>
         </div>
@@ -352,5 +372,13 @@ export default function DashboardPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function DashboardPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <DashboardContent />
+    </Suspense>
   );
 }

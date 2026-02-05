@@ -77,8 +77,7 @@ export function ChatInterface({ reportId, className }: ChatInterfaceProps) {
       console.error('Chat error:', error);
       const errorMessage: Message = {
         role: 'assistant',
-        content:
-          "Désolé, une erreur s'est produite. Veuillez réessayer.",
+        content: "Désolé, une erreur s'est produite. Veuillez réessayer.",
         timestamp: new Date(),
       };
       setMessages((prev) => [...prev, errorMessage]);
@@ -95,10 +94,10 @@ export function ChatInterface({ reportId, className }: ChatInterfaceProps) {
   };
 
   const suggestedQuestions = [
-    "Pourquoi mon système cardiovasculaire vieillit-il plus vite ?",
-    "Quelles sont les meilleures recommandations pour moi ?",
-    "Comment puis-je améliorer mon BioNoise ?",
-    "Quels systèmes dois-je prioriser ?",
+    'Pourquoi mon système cardiovasculaire vieillit-il plus vite ?',
+    'Quelles sont les meilleures recommandations pour moi ?',
+    'Comment puis-je améliorer mon BioNoise ?',
+    'Quels systèmes dois-je prioriser ?',
   ];
 
   return (

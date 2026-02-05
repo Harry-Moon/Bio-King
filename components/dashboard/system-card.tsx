@@ -58,7 +58,9 @@ export function SystemCard({ system, chronologicalAge }: SystemCardProps) {
         <div className={cn('text-2xl font-bold', colorClass)}>
           {systemAge.toFixed(1)}
         </div>
-        <div className="text-xs text-muted-foreground">{t('dashboard.biologicalYears')}</div>
+        <div className="text-xs text-muted-foreground">
+          {t('dashboard.biologicalYears')}
+        </div>
       </div>
 
       {/* Aging Speed */}

@@ -30,10 +30,7 @@ export async function POST(request: NextRequest) {
       .single();
 
     if (reportError || !report) {
-      return NextResponse.json(
-        { error: 'Report not found' },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: 'Report not found' }, { status: 404 });
     }
 
     console.log(`[Chat] Report found, PDF URL: ${report.pdf_url}`);
@@ -96,12 +93,12 @@ ${report.recommendations?.map((rec: any) => `[${rec.type.toUpperCase()}] ${rec.t
 
     // 6. Uploader le PDF vers OpenAI (si pas déjà fait)
     const openai = getOpenAIClient();
-    
+
     console.log('[Chat] Uploading PDF to OpenAI');
     const pdfFile = new File([new Uint8Array(pdfBuffer)], 'report.pdf', {
       type: 'application/pdf',
     });
-    
+
     const file = await openai.files.create({
       file: pdfFile,
       purpose: 'assistants',
@@ -162,7 +159,9 @@ RÈGLES:
 
     // 10. Récupérer la réponse
     const messages = await openai.beta.threads.messages.list(thread.id);
-    const assistantMessage = messages.data.find((msg) => msg.role === 'assistant');
+    const assistantMessage = messages.data.find(
+      (msg) => msg.role === 'assistant'
+    );
 
     if (!assistantMessage || !assistantMessage.content[0]) {
       throw new Error('No response from assistant');
