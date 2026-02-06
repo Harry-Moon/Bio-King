@@ -99,7 +99,9 @@ export function SystemGauge({
       <div className="space-y-2 text-sm">
         <div className="flex justify-between">
           <span className="text-muted-foreground">Biological age</span>
-          <span className="font-semibold">{safeSystemAge.toFixed(1)} years</span>
+          <span className="font-semibold">
+            {safeSystemAge.toFixed(1)} years
+          </span>
         </div>
         <div className="flex justify-between">
           <span className="text-muted-foreground">Chronological age</span>

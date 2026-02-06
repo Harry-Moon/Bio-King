@@ -1,6 +1,16 @@
 'use client';
 
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine, Dot } from 'recharts';
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  ReferenceLine,
+  ReferenceDot,
+} from 'recharts';
 
 interface EntropyCurveProps {
   chronologicalAge: number;
@@ -25,6 +35,15 @@ export function EntropyCurve({
   // Points clés
   const primeEnd = 25.8;
   const plateauEnd = 42.1;
+
+  // Calculer la valeur Y sur la courbe pour systemAge
+  const getYValue = (x: number): number => {
+    if (x <= 25) return (x / 25) * 5;
+    if (x <= 45) return 5 + ((x - 25) / 20) * 13;
+    return 18 + ((x - 45) / 20) * 17;
+  };
+
+  const systemAgeY = getYValue(systemAge);
 
   // Couleurs selon le stage
   const stageColors = {
@@ -59,11 +78,18 @@ export function EntropyCurve({
       {/* Graphique */}
       <div className="h-[280px] w-full">
         <ResponsiveContainer width="100%" height="100%">
-          <LineChart data={data} margin={{ top: 10, right: 20, left: 40, bottom: 40 }}>
+          <LineChart
+            data={data}
+            margin={{ top: 10, right: 20, left: 40, bottom: 40 }}
+          >
             <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
             <XAxis
               dataKey="x"
-              label={{ value: 'SystemAge among Population', position: 'bottom', offset: 10 }}
+              label={{
+                value: 'SystemAge among Population',
+                position: 'bottom',
+                offset: 10,
+              }}
               tick={{ fontSize: 11, fill: 'hsl(var(--muted-foreground))' }}
             />
             <YAxis
@@ -129,8 +155,11 @@ export function EntropyCurve({
             />
 
             {/* Point utilisateur */}
-            <ReferenceLine
+            <ReferenceDot
               x={systemAge}
+              y={systemAgeY}
+              r={6}
+              fill={stageColors[agingStage]}
               stroke={stageColors[agingStage]}
               strokeWidth={2}
               label={{
@@ -140,9 +169,7 @@ export function EntropyCurve({
                 fontSize: 12,
                 fontWeight: 600,
               }}
-            >
-              <Dot cx={systemAge} cy={12} r={6} fill={stageColors[agingStage]} />
-            </ReferenceLine>
+            />
           </LineChart>
         </ResponsiveContainer>
       </div>

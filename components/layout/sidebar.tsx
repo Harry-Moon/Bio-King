@@ -90,13 +90,9 @@ export function Sidebar() {
               {isHovering && (
                 <>
                   {isOpen ? (
-                    <PanelLeftClose
-                      className="absolute h-6 w-6 text-green-500 animate-in fade-in duration-200"
-                    />
+                    <PanelLeftClose className="absolute h-6 w-6 text-green-500 animate-in fade-in duration-200" />
                   ) : (
-                    <PanelLeftOpen
-                      className="absolute h-6 w-6 text-green-500 animate-in fade-in duration-200"
-                    />
+                    <PanelLeftOpen className="absolute h-6 w-6 text-green-500 animate-in fade-in duration-200" />
                   )}
                 </>
               )}

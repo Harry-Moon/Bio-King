@@ -75,8 +75,10 @@ export function SystemComparisonChart({
   }));
 
   const [isMobile, setIsMobile] = React.useState(false);
+  const [mounted, setMounted] = React.useState(false);
 
   React.useEffect(() => {
+    setMounted(true);
     const checkMobile = () => setIsMobile(window.innerWidth < 768);
     checkMobile();
     window.addEventListener('resize', checkMobile);
@@ -116,11 +118,11 @@ export function SystemComparisonChart({
             <XAxis
               dataKey="name"
               interval={0}
-              angle={isMobile ? 0 : -60}
-              textAnchor={isMobile ? 'middle' : 'end'}
-              height={isMobile ? 0 : 130}
+              angle={mounted && isMobile ? 0 : -60}
+              textAnchor={mounted && isMobile ? 'middle' : 'end'}
+              height={mounted && isMobile ? 0 : 130}
               tick={
-                isMobile
+                mounted && isMobile
                   ? false
                   : {
                       fontSize: 10,
@@ -128,7 +130,9 @@ export function SystemComparisonChart({
                     }
               }
             />
-            <YAxis tick={{ fontSize: 12, fill: 'hsl(var(--muted-foreground))' }} />
+            <YAxis
+              tick={{ fontSize: 12, fill: 'hsl(var(--muted-foreground))' }}
+            />
             <Tooltip
               formatter={(value: any) => [
                 `${typeof value === 'number' ? value : 0} ${t('common.years')}`,
@@ -160,7 +164,7 @@ export function SystemComparisonChart({
                   fill={categoryColors[entry.category as Category]}
                 />
               ))}
-              {!isMobile && (
+              {mounted && !isMobile && (
                 <LabelList
                   dataKey="systemAge"
                   position="top"
