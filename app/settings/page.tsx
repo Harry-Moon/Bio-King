@@ -1,49 +1,71 @@
 'use client';
 
 import { useTheme } from '@/lib/theme/theme-context';
-import { Moon, Sun, Monitor } from 'lucide-react';
+import { useLanguage } from '@/lib/i18n/language-context';
+import { Moon, Sun, Monitor, Globe } from 'lucide-react';
 
 export default function SettingsPage() {
   const { theme, setTheme } = useTheme();
+  const { language, setLanguage } = useLanguage();
 
   const themeOptions: Array<{
     value: 'light' | 'dark' | 'system';
     label: string;
     icon: React.ReactNode;
   }> = [
-    { value: 'light', label: 'Clair', icon: <Sun className="h-4 w-4" /> },
-    { value: 'dark', label: 'Sombre', icon: <Moon className="h-4 w-4" /> },
+    { value: 'light', label: 'Light', icon: <Sun className="h-4 w-4" /> },
+    { value: 'dark', label: 'Dark', icon: <Moon className="h-4 w-4" /> },
     {
       value: 'system',
-      label: 'Système',
+      label: 'System',
       icon: <Monitor className="h-4 w-4" />,
     },
   ];
 
+  const languages = [
+    { code: 'en', label: 'English' },
+    { code: 'fr', label: 'Français' },
+  ];
+
   return (
     <div>
-      <h1 className="mb-6 text-3xl font-bold">Paramètres</h1>
+      <h1 className="mb-6 text-3xl font-bold">Settings</h1>
       <div className="space-y-6">
         <div className="rounded-lg border bg-card p-6 shadow-sm">
-          <h2 className="mb-4 text-xl font-semibold">Préférences générales</h2>
+          <h2 className="mb-4 text-xl font-semibold">General Preferences</h2>
           <div className="space-y-6">
             {/* Language Setting */}
-            <div className="flex items-center justify-between border-b pb-4 last:border-0">
+            <div className="flex items-center justify-between border-b border-border/50 pb-4">
               <div>
-                <p className="font-medium">Langue</p>
+                <p className="font-medium">Language</p>
                 <p className="text-sm text-muted-foreground">
-                  Choisissez votre langue préférée
+                  Choose your preferred language
                 </p>
               </div>
-              <p className="text-muted-foreground">Français</p>
+              <div className="flex gap-2">
+                {languages.map((lang) => (
+                  <button
+                    key={lang.code}
+                    onClick={() => setLanguage(lang.code as 'en' | 'fr')}
+                    className={`flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition-all ${
+                      language === lang.code
+                        ? 'bg-green-500/15 text-green-600 dark:text-green-400'
+                        : 'border border-border text-muted-foreground hover:bg-accent/50'
+                    }`}
+                  >
+                    <Globe className="h-4 w-4" />
+                    {lang.label}
+                  </button>
+                ))}
+              </div>
             </div>
 
             {/* Theme Setting */}
             <div className="flex items-center justify-between">
               <div>
-                <p className="font-medium">Thème</p>
+                <p className="font-medium">Theme</p>
                 <p className="text-sm text-muted-foreground">
-                  Mode clair, sombre ou système
+                  Light, dark, or system mode
                 </p>
               </div>
               <div className="flex gap-2">

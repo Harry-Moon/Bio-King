@@ -7,6 +7,7 @@ import { useAuth } from '@/components/auth/auth-provider';
 import { SystemGauge } from '@/components/dashboard/system-gauge';
 import { SystemCard } from '@/components/dashboard/system-card';
 import { SystemComparisonChart } from '@/components/dashboard/system-comparison-chart';
+import { EntropyCurve } from '@/components/dashboard/entropy-curve';
 import { RecommendationCard } from '@/components/dashboard/recommendation-card';
 import { Loader2, AlertTriangle, TrendingUp } from 'lucide-react';
 import {
@@ -264,6 +265,15 @@ function DashboardContent() {
           chronologicalAge={report.chronologicalAge}
         />
       )}
+
+      {/* Entropy Curve */}
+      <div className="rounded-xl border bg-card p-6 shadow-sm">
+        <EntropyCurve
+          chronologicalAge={report.chronologicalAge}
+          systemAge={report.overallSystemAge}
+          agingStage={report.agingStage}
+        />
+      </div>
 
       {/* Top Aging Factors */}
       {topAgingFactors.length > 0 && (
