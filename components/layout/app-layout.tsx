@@ -16,7 +16,10 @@ export function AppLayout({ children }: AppLayoutProps) {
   const publicPages = ['/login', '/signup'];
   const isPublicPage = publicPages.includes(pathname);
 
-  if (isPublicPage) {
+  // Pages admin : ne pas afficher la sidebar publique (elles ont leur propre layout)
+  const isAdminPage = pathname.startsWith('/admin');
+
+  if (isPublicPage || isAdminPage) {
     return <>{children}</>;
   }
 

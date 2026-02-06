@@ -9,6 +9,7 @@ import { SystemCard } from '@/components/dashboard/system-card';
 import { SystemComparisonChart } from '@/components/dashboard/system-comparison-chart';
 import { EntropyCurve } from '@/components/dashboard/entropy-curve';
 import { RecommendationCard } from '@/components/dashboard/recommendation-card';
+import { LastUploadInfo } from '@/components/dashboard/last-upload-info';
 import { Loader2, AlertTriangle, TrendingUp } from 'lucide-react';
 import {
   mapSupabaseReport,
@@ -182,11 +183,17 @@ function DashboardContent() {
   return (
     <div className="space-y-8">
       {/* Header */}
-      <div>
-        <h1 className="mb-2 text-4xl font-bold">{t('dashboard.title')}</h1>
-        <p className="text-lg text-muted-foreground">
-          {t('dashboard.subtitle')}
-        </p>
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+        <div>
+          <h1 className="mb-2 text-4xl font-bold">{t('dashboard.title')}</h1>
+          <p className="text-lg text-muted-foreground">
+            {t('dashboard.subtitle')}
+          </p>
+        </div>
+        {/* Info dernier upload et bouton upload */}
+        <div className="flex-shrink-0">
+          <LastUploadInfo report={report} />
+        </div>
       </div>
 
       {/* Hero Card - Score global */}

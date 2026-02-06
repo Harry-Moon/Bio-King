@@ -10,6 +10,7 @@ import {
   Trophy,
   User,
   Upload,
+  ShoppingBag,
 } from 'lucide-react';
 
 const navItems = [
@@ -24,14 +25,14 @@ const navItems = [
     icon: Upload,
   },
   {
+    label: 'Marketplace',
+    href: '/marketplace',
+    icon: ShoppingBag,
+  },
+  {
     label: 'Rapports',
     href: '/reports',
     icon: FileText,
-  },
-  {
-    label: 'Défis',
-    href: '/challenges',
-    icon: Trophy,
   },
   {
     label: 'Profil',

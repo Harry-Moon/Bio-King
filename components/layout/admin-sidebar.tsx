@@ -2,71 +2,40 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import {
-  LayoutDashboard,
-  Database,
-  FileText,
-  User,
-  Settings,
-  Upload,
-  ChevronLeft,
-  ChevronRight,
+  Package,
+  Users,
   Dna,
   PanelLeftOpen,
   PanelLeftClose,
-  ShoppingBag,
-  ShieldCheck,
+  LogOut,
 } from 'lucide-react';
 import { UserMenu } from '@/components/auth/user-menu';
-import { isAdmin } from '@/lib/utils/admin';
-import { useAuth } from '@/components/auth/auth-provider';
 
-const navItems = [
+const adminNavItems = [
   {
-    label: 'Dashboard',
-    href: '/dashboard',
-    icon: LayoutDashboard,
+    label: 'Catalog',
+    href: '/admin/catalog',
+    icon: Package,
   },
   {
-    label: 'Upload Report',
-    href: '/upload',
-    icon: Upload,
-  },
-  {
-    label: 'Marketplace',
-    href: '/marketplace',
-    icon: ShoppingBag,
-  },
-  {
-    label: 'Biomarkers',
-    href: '/data',
-    icon: Database,
-  },
-  {
-    label: 'Reports',
-    href: '/reports',
-    icon: FileText,
-  },
-  {
-    label: 'Profile',
-    href: '/profile',
-    icon: User,
-  },
-  {
-    label: 'Settings',
-    href: '/settings',
-    icon: Settings,
+    label: 'Users',
+    href: '/admin/users',
+    icon: Users,
   },
 ];
 
-export function Sidebar() {
+export function AdminSidebar() {
   const pathname = usePathname();
-  const { user } = useAuth();
+  const router = useRouter();
   const [isOpen, setIsOpen] = useState(true);
   const [isHovering, setIsHovering] = useState(false);
-  const userIsAdmin = isAdmin(user);
+
+  const handleExitAdmin = () => {
+    router.push('/dashboard');
+  };
 
   return (
     <aside
@@ -83,21 +52,17 @@ export function Sidebar() {
           onMouseLeave={() => setIsHovering(false)}
         >
           <div className="flex items-center gap-2">
-            {/* Icon Container */}
             <button
               onClick={() => setIsOpen(!isOpen)}
               className="relative flex h-6 w-6 flex-shrink-0 items-center justify-center transition-opacity"
               title={isOpen ? 'Collapse sidebar' : 'Expand sidebar'}
             >
-              {/* DNA Icon - Hidden on hover */}
               <Dna
                 className={cn(
                   'h-6 w-6 text-green-500 transition-opacity duration-200',
                   isHovering ? 'opacity-0' : 'opacity-100'
                 )}
               />
-
-              {/* Action Icon - Shown on hover */}
               {isHovering && (
                 <>
                   {isOpen ? (
@@ -108,18 +73,20 @@ export function Sidebar() {
                 </>
               )}
             </button>
-
             {isOpen && (
-              <h1 className="whitespace-nowrap text-xl font-bold text-green-500">
-                BioKing
-              </h1>
+              <div className="flex flex-col">
+                <h1 className="whitespace-nowrap text-xl font-bold text-green-500">
+                  BioKing
+                </h1>
+                <span className="text-xs text-muted-foreground">Admin</span>
+              </div>
             )}
           </div>
         </div>
 
         {/* Navigation */}
         <nav className={cn('flex-1 space-y-1', isOpen ? 'p-3' : 'p-2')}>
-          {navItems.map((item) => {
+          {adminNavItems.map((item) => {
             const Icon = item.icon;
             const isActive = pathname === item.href;
 
@@ -142,24 +109,20 @@ export function Sidebar() {
           })}
         </nav>
 
-        {/* Admin Link */}
-        {userIsAdmin && (
-          <div className="border-t border-border/50 p-3">
-            <Link
-              href="/admin/catalog"
-              className={cn(
-                'flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all',
-                pathname.startsWith('/admin')
-                  ? 'bg-green-500/15 text-green-600 dark:text-green-400'
-                  : 'text-muted-foreground hover:bg-accent/50'
-              )}
-              title={!isOpen ? 'Admin' : undefined}
-            >
-              <ShieldCheck className="h-5 w-5 flex-shrink-0" />
-              {isOpen && <span>Admin</span>}
-            </Link>
-          </div>
-        )}
+        {/* Exit Admin Button */}
+        <div className="border-t border-border/50 p-3">
+          <button
+            onClick={handleExitAdmin}
+            className={cn(
+              'flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all text-muted-foreground hover:bg-accent/50',
+              !isOpen && 'justify-center'
+            )}
+            title={!isOpen ? 'Exit Admin' : undefined}
+          >
+            <LogOut className="h-5 w-5 flex-shrink-0" />
+            {isOpen && <span>Exit Admin</span>}
+          </button>
+        </div>
 
         {/* User Menu */}
         <div className="border-t border-border/50 p-3">
