@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/components/auth/auth-provider';
@@ -26,7 +26,7 @@ import { cn } from '@/lib/utils';
  */
 export const dynamic = 'force-dynamic';
 
-export default function MarketplacePage() {
+function MarketplaceContent() {
   const { user } = useAuth();
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -449,4 +449,18 @@ function calculateSystemCoverage(
       if (!a.priority && b.priority) return 1;
       return b.coverage - a.coverage;
     });
+}
+
+export default function MarketplacePage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex min-h-screen items-center justify-center">
+          <div className="text-muted-foreground">Chargement...</div>
+        </div>
+      }
+    >
+      <MarketplaceContent />
+    </Suspense>
+  );
 }
