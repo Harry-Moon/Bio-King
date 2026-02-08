@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { getAllProducts } from '@/lib/data/admin-products';
+import { getAllProducts } from '@/lib/data/marketplace-products-db';
 import type { BioProduct } from '@/lib/types/marketplace';
 import {
   ArrowLeft,
@@ -29,16 +29,20 @@ export default function ProductDetailPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Charger depuis le store admin
-    const allProducts = getAllProducts();
-    const foundProduct = allProducts.find((p) => p.id === productId);
-    // Ne pas afficher les produits inactifs
-    if (foundProduct && !foundProduct.isActive) {
-      setProduct(null);
-    } else {
-      setProduct(foundProduct || null);
+    async function loadProduct() {
+      try {
+        // Charger depuis Supabase
+        const allProducts = await getAllProducts(false); // Seulement les actifs
+        const foundProduct = allProducts.find((p) => p.id === productId);
+        setProduct(foundProduct || null);
+      } catch (error) {
+        console.error('Error loading product:', error);
+        setProduct(null);
+      } finally {
+        setLoading(false);
+      }
     }
-    setLoading(false);
+    loadProduct();
   }, [productId]);
 
   if (loading) {

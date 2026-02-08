@@ -1,101 +1,81 @@
 /**
- * Gestion d'état mock pour les produits admin
- * TODO: Migrer vers Supabase
+ * Gestion des produits admin avec Supabase
+ * Utilise marketplace_products en base de données
  */
 
 import type { BioProduct } from '@/lib/types/marketplace';
-import { mockProducts } from './marketplace-products';
-
-// État global des produits (simule une base de données)
-let productsState: BioProduct[] = [...mockProducts];
+import {
+  getAllProducts as getAllProductsFromDB,
+  getProductById as getProductByIdFromDB,
+  createProduct as createProductInDB,
+  updateProduct as updateProductInDB,
+  deleteProduct as deleteProductInDB,
+} from './marketplace-products-db';
 
 /**
- * Récupère tous les produits
+ * Récupère tous les produits (actifs et inactifs pour les admins)
  */
-export function getAllProducts(): BioProduct[] {
-  return productsState;
+export async function getAllProducts(includeInactive = true): Promise<BioProduct[]> {
+  return getAllProductsFromDB(includeInactive);
 }
 
 /**
  * Récupère un produit par ID
  */
-export function getProductById(id: string): BioProduct | undefined {
-  return productsState.find((p) => p.id === id);
+export async function getProductById(id: string): Promise<BioProduct | null> {
+  return getProductByIdFromDB(id);
 }
 
 /**
  * Met à jour un produit
  */
-export function updateProduct(
+export async function updateProduct(
   id: string,
   updates: Partial<BioProduct>
-): BioProduct | null {
-  const index = productsState.findIndex((p) => p.id === id);
-  if (index === -1) return null;
-
-  productsState[index] = {
-    ...productsState[index],
-    ...updates,
-    updatedAt: new Date(),
-  };
-
-  return productsState[index];
+): Promise<BioProduct | null> {
+  return updateProductInDB(id, updates);
 }
 
 /**
  * Crée un nouveau produit
  */
-export function createProduct(
+export async function createProduct(
   product: Omit<BioProduct, 'id' | 'createdAt' | 'updatedAt'>
-): BioProduct {
-  const newProduct: BioProduct = {
-    ...product,
-    id: `product-${Date.now()}`,
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  };
-
-  productsState.push(newProduct);
-  return newProduct;
+): Promise<BioProduct | null> {
+  return createProductInDB(product);
 }
 
 /**
  * Duplique un produit
  */
-export function duplicateProduct(id: string): BioProduct | null {
-  const product = getProductById(id);
+export async function duplicateProduct(id: string): Promise<BioProduct | null> {
+  const product = await getProductById(id);
   if (!product) return null;
 
-  const duplicated: BioProduct = {
+  const duplicated: Omit<BioProduct, 'id' | 'createdAt' | 'updatedAt'> = {
     ...product,
-    id: `product-${Date.now()}`,
     name: `${product.name} (Copy)`,
-    createdAt: new Date(),
-    updatedAt: new Date(),
   };
 
-  productsState.push(duplicated);
-  return duplicated;
+  // Supprimer les champs qui seront générés
+  delete (duplicated as any).id;
+  delete (duplicated as any).createdAt;
+  delete (duplicated as any).updatedAt;
+
+  return createProductInDB(duplicated);
 }
 
 /**
  * Archive un produit (désactive)
  */
-export function archiveProduct(id: string): boolean {
-  const product = getProductById(id);
-  if (!product) return false;
-
-  updateProduct(id, { isActive: false });
-  return true;
+export async function archiveProduct(id: string): Promise<boolean> {
+  const result = await updateProductInDB(id, { isActive: false });
+  return result !== null;
 }
 
 /**
  * Supprime un produit
  */
-export function deleteProduct(id: string): boolean {
-  const index = productsState.findIndex((p) => p.id === id);
-  if (index === -1) return false;
-
-  productsState.splice(index, 1);
-  return true;
+export async function deleteProduct(id: string): Promise<boolean> {
+  return deleteProductInDB(id);
 }

@@ -76,8 +76,8 @@ export function EntropyCurve({
       </div>
 
       {/* Graphique */}
-      <div className="h-[280px] w-full">
-        <ResponsiveContainer width="100%" height="100%">
+      <div className="h-[280px] w-full min-h-[200px]">
+        <ResponsiveContainer width="100%" height="100%" minHeight={200}>
           <LineChart
             data={data}
             margin={{ top: 10, right: 20, left: 40, bottom: 40 }}

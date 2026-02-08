@@ -53,14 +53,8 @@ export function UserMenu({ isCollapsed = false }: UserMenuProps) {
             onClick={() => setShowMenu(false)}
           />
 
-          {/* Menu */}
-          <div className="absolute right-0 z-20 mt-2 w-48 rounded-lg border bg-card shadow-lg">
-            <div className="border-b p-3">
-              <p className="truncate text-sm font-medium">{email}</p>
-              <p className="text-xs text-muted-foreground">
-                ID: {user.id.substring(0, 8)}...
-              </p>
-            </div>
+          {/* Menu - Positionné vers le haut pour éviter de dépasser l'écran */}
+          <div className="absolute right-0 bottom-full z-20 mb-2 w-48 rounded-lg border bg-card shadow-lg">
             <div className="p-2">
               <button
                 onClick={() => {

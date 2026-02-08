@@ -14,20 +14,46 @@ if (!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
 }
 
 // Client Supabase pour le client-side (avec RLS et cookies)
-// Utilise createBrowserClient pour éviter les instances multiples
-let supabaseInstance: ReturnType<typeof createBrowserClient> | null = null;
+// Singleton pattern pour éviter les instances multiples de GoTrueClient
+let supabaseBrowserInstance: ReturnType<typeof createBrowserClient> | null = null;
+let supabaseServerInstance: ReturnType<typeof createClient> | null = null;
 
-export const supabase =
-  typeof window !== 'undefined'
-    ? supabaseInstance ||
-      (supabaseInstance = createBrowserClient(
+function getSupabaseClient() {
+  if (typeof window === 'undefined') {
+    // Server-side : créer une instance temporaire (pas de singleton nécessaire)
+    if (!supabaseServerInstance) {
+      supabaseServerInstance = createClient(
         process.env.NEXT_PUBLIC_SUPABASE_URL!,
         process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-      ))
-    : createClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL,
-        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
       );
+    }
+    return supabaseServerInstance;
+  }
+
+  // Client-side : utiliser le singleton browser
+  if (!supabaseBrowserInstance) {
+    supabaseBrowserInstance = createBrowserClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    );
+  }
+
+  return supabaseBrowserInstance;
+}
+
+// Export avec Proxy pour éviter l'exécution au niveau du module (lazy evaluation)
+// Le Proxy délègue tous les accès à getSupabaseClient() qui est appelé seulement quand nécessaire
+export const supabase = new Proxy({} as ReturnType<typeof createBrowserClient>, {
+  get(_target, prop) {
+    const client = getSupabaseClient();
+    const value = client[prop as keyof typeof client];
+    // Si c'est une fonction, bind le contexte pour préserver 'this'
+    if (typeof value === 'function') {
+      return value.bind(client);
+    }
+    return value;
+  },
+});
 
 // Client Supabase avec service role pour server-side (bypass RLS)
 export const supabaseAdmin = createClient(
@@ -40,4 +66,6 @@ export const supabaseAdmin = createClient(
 export const STORAGE_BUCKETS = {
   SYSTEMAGE_REPORTS: 'systemage-reports',
   CATALOG_IMAGES: 'catalog-images',
+  USER_AVATARS: 'user-avatars',
+  PRODUCT_COVERS: 'product-covers',
 } as const;

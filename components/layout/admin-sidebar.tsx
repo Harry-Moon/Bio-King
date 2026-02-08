@@ -44,7 +44,13 @@ export function AdminSidebar() {
         isOpen ? 'w-64' : 'w-16'
       )}
     >
-      <div className="flex h-full flex-col">
+      <div
+        className="flex h-full flex-col"
+        style={{
+          background:
+            'linear-gradient(to bottom, #0D2820 0%, #050505 50%, #08192A 100%)',
+        }}
+      >
         {/* Logo / Titre */}
         <div
           className="border-b border-border/50 p-4"

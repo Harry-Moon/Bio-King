@@ -19,7 +19,18 @@ const AuthContext = createContext<AuthContextType>({
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
-  const supabase = createClient();
+  
+  // #region agent log
+  fetch('http://127.0.0.1:7243/ingest/ceb253d4-8810-4458-a8e9-df161de7da4a',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'auth-provider.tsx:22',message:'AuthProvider render start',data:{windowDefined:typeof window!=='undefined',isServer:typeof window==='undefined'},timestamp:Date.now(),runId:'run1',hypothesisId:'A'})}).catch(()=>{});
+  // #endregion
+  
+  // Créer le client uniquement côté client (lazy initialization)
+  const [supabase] = useState(() => {
+    // #region agent log
+    fetch('http://127.0.0.1:7243/ingest/ceb253d4-8810-4458-a8e9-df161de7da4a',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'auth-provider.tsx:26',message:'createClient call in useState',data:{windowDefined:typeof window!=='undefined'},timestamp:Date.now(),runId:'run1',hypothesisId:'A'})}).catch(()=>{});
+    // #endregion
+    return createClient();
+  });
 
   useEffect(() => {
     // Récupérer l'utilisateur initial

@@ -18,6 +18,13 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // #region agent log
+  if (typeof window === 'undefined') {
+    // Log côté serveur uniquement
+    console.log('[DEBUG] RootLayout rendering on server');
+  }
+  // #endregion
+  
   return (
     <html lang="fr">
       <body className={inter.className}>

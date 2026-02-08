@@ -8,7 +8,7 @@ import { HeroCard } from '@/components/marketplace/hero-card';
 import { ProductCard } from '@/components/marketplace/product-card';
 import { ProtocolSidebar } from '@/components/marketplace/protocol-sidebar';
 import { productCategories } from '@/lib/data/marketplace-products';
-import { getAllProducts } from '@/lib/data/admin-products';
+import { getAllProducts } from '@/lib/data/marketplace-products-db';
 import type {
   BioProduct,
   ProductCategory,
@@ -52,11 +52,26 @@ function MarketplaceContent() {
   // État de visibilité de la sidebar
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
+  // État des produits
+  const [allProducts, setAllProducts] = useState<BioProduct[]>([]);
+
+  // Charger les produits au montage
+  useEffect(() => {
+    async function loadProducts() {
+      try {
+        const products = await getAllProducts(false); // Seulement les actifs
+        setAllProducts(products);
+      } catch (error) {
+        console.error('Error loading products:', error);
+      }
+    }
+    loadProducts();
+  }, []);
+
   // Gérer l'ajout depuis l'URL (ex: ?add=product-id)
   useEffect(() => {
     const addParam = searchParams.get('add');
-    if (addParam && user) {
-      const allProducts = getAllProducts();
+    if (addParam && user && allProducts.length > 0) {
       const product = allProducts.find((p) => p.id === addParam);
       if (
         product &&
@@ -78,7 +93,7 @@ function MarketplaceContent() {
       router.replace('/marketplace');
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchParams, user]);
+  }, [searchParams, user, allProducts]);
 
   // Charger les données du rapport pour les recommandations
   useEffect(() => {
@@ -139,7 +154,6 @@ function MarketplaceContent() {
 
   // Filtrer et recommander les produits
   const filteredProducts = useMemo(() => {
-    const allProducts = getAllProducts();
     let products = allProducts.filter((p) => p.isActive);
 
     // Filtre par catégorie
@@ -167,7 +181,7 @@ function MarketplaceContent() {
     });
 
     return products;
-  }, [activeFilter, bodySystems, searchQuery]);
+  }, [allProducts, activeFilter, bodySystems, searchQuery]);
 
   // Séparer Hero et Products (utiliser displayType si disponible, sinon isHero)
   const heroProducts = filteredProducts.filter(
@@ -195,7 +209,6 @@ function MarketplaceContent() {
 
   // Handlers
   const handleAddToProtocol = (productId: string) => {
-    const allProducts = getAllProducts();
     const product = allProducts.find((p) => p.id === productId);
     if (!product) return;
 

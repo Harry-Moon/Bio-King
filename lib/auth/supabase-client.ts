@@ -1,14 +1,12 @@
 'use client';
 
-import { createBrowserClient } from '@supabase/ssr';
+import { supabase } from '@/lib/supabase';
 
 /**
  * Client Supabase pour les composants client
  * Utilise automatiquement les cookies pour l'authentification
+ * Réutilise le même singleton que lib/supabase.ts pour éviter les instances multiples
  */
 export const createClient = () => {
-  return createBrowserClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-  );
+  return supabase;
 };

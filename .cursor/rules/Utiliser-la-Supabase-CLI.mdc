@@ -1,0 +1,10 @@
+---
+alwaysApply: true
+---
+
+Toujours utiliser la Supabase CLI pour les modifications de base de données.
+1. Ne génère jamais de SQL "en l'air" sans contexte de fichier.
+2. Pour chaque changement de schéma, utilise la commande : 
+   `npx supabase migration new nom_de_la_migration`
+3. Écris le code SQL dans le fichier généré dans `supabase/migrations/`.
+4. Respecte les conventions Supabase : RLS (Row Level Security) activé par défaut, types UUID pour les PK.

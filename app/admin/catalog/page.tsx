@@ -1,18 +1,19 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { CatalogTable } from '@/components/admin/catalog-table';
 import { CatalogFilters } from '@/components/admin/catalog-filters';
 import { ItemBuilder } from '@/components/admin/item-builder';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
-import { Search, Plus } from 'lucide-react';
-import { getAllProducts, updateProduct } from '@/lib/data/admin-products';
+import { Search, Plus, Loader2 } from 'lucide-react';
+import { getAllProducts, updateProduct, createProduct } from '@/lib/data/admin-products';
 import type { BioProduct, ProductCategory } from '@/lib/types/marketplace';
 
 export default function AdminCatalogPage() {
-  const [products, setProducts] = useState<BioProduct[]>(getAllProducts());
+  const [products, setProducts] = useState<BioProduct[]>([]);
+  const [loading, setLoading] = useState(true);
   const [selectedProduct, setSelectedProduct] = useState<BioProduct | null>(
     null
   );
@@ -22,9 +23,29 @@ export default function AdminCatalogPage() {
   const [visibleInMarketplace, setVisibleInMarketplace] = useState(true);
   const [featuredRow, setFeaturedRow] = useState(false);
 
-  // Recharger les produits depuis le store après chaque mise à jour
-  const refreshProducts = () => {
-    setProducts(getAllProducts());
+  // Charger les produits au montage
+  useEffect(() => {
+    async function loadProducts() {
+      try {
+        const allProducts = await getAllProducts(true); // Inclure les inactifs pour les admins
+        setProducts(allProducts);
+      } catch (error) {
+        console.error('Error loading products:', error);
+      } finally {
+        setLoading(false);
+      }
+    }
+    loadProducts();
+  }, []);
+
+  // Recharger les produits depuis la DB après chaque mise à jour
+  const refreshProducts = async () => {
+    try {
+      const allProducts = await getAllProducts(true);
+      setProducts(allProducts);
+    } catch (error) {
+      console.error('Error refreshing products:', error);
+    }
   };
 
   // Filtrer les produits
@@ -80,21 +101,25 @@ export default function AdminCatalogPage() {
     setSelectedProduct(product);
   };
 
-  const handleProductUpdate = (updatedProduct: BioProduct) => {
-    // Mettre à jour dans le mock store
-    updateProduct(updatedProduct.id, updatedProduct);
-    // Recharger depuis le store pour synchroniser avec la marketplace
-    refreshProducts();
-    // Mettre à jour le produit sélectionné avec la version mise à jour
-    const updated = getAllProducts().find((p) => p.id === updatedProduct.id);
-    if (updated) {
-      setSelectedProduct(updated);
+  const handleProductUpdate = async (updatedProduct: BioProduct, skipRefresh = false) => {
+    // Mettre à jour dans la DB
+    const result = await updateProduct(updatedProduct.id, updatedProduct);
+    if (result) {
+      // Recharger depuis la DB pour synchroniser avec la marketplace
+      // Sauf si skipRefresh est true (cas de l'upload d'image qui met déjà à jour la DB)
+      if (!skipRefresh) {
+        await refreshProducts();
+      }
+      // Mettre à jour le produit sélectionné avec la version mise à jour
+      // Seulement si la popin est déjà ouverte (pour éviter de la rouvrir)
+      if (selectedProduct && selectedProduct.id === updatedProduct.id) {
+        setSelectedProduct(result);
+      }
     }
   };
 
-  const handleNewProduct = () => {
-    const newProduct: BioProduct = {
-      id: `product-${Date.now()}`,
+  const handleNewProduct = async () => {
+    const newProduct = await createProduct({
       name: 'New Product',
       category: 'inflammation',
       type: 'supplement',
@@ -108,12 +133,21 @@ export default function AdminCatalogPage() {
       tags: [],
       isActive: false,
       billingModel: 'one-time',
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    };
-    setProducts((prev) => [...prev, newProduct]);
-    setSelectedProduct(newProduct);
+    });
+    
+    if (newProduct) {
+      await refreshProducts();
+      setSelectedProduct(newProduct);
+    }
   };
+
+  if (loading) {
+    return (
+      <div className="flex h-full items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+      </div>
+    );
+  }
 
   return (
     <>
@@ -193,15 +227,13 @@ export default function AdminCatalogPage() {
               onUpdate={(updatedProduct) => {
                 handleProductUpdate(updatedProduct);
               }}
-              onDuplicate={() => {
-                const duplicated = { ...selectedProduct };
-                duplicated.id = `product-${Date.now()}`;
-                duplicated.name = `${selectedProduct.name} (Copy)`;
-                duplicated.createdAt = new Date();
-                duplicated.updatedAt = new Date();
-                updateProduct(duplicated.id, duplicated);
-                refreshProducts();
-                setSelectedProduct(duplicated);
+              onDuplicate={async () => {
+                const { duplicateProduct } = await import('@/lib/data/admin-products');
+                const duplicated = await duplicateProduct(selectedProduct.id);
+                if (duplicated) {
+                  await refreshProducts();
+                  setSelectedProduct(duplicated);
+                }
               }}
               onArchive={() => {
                 handleProductUpdate({ ...selectedProduct, isActive: false });

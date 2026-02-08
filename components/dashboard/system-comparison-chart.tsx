@@ -104,8 +104,8 @@ export function SystemComparisonChart({
         </div>
       </div>
 
-      <div className="h-[600px] w-full">
-        <ResponsiveContainer width="100%" height="100%">
+      <div className="h-[600px] w-full min-h-[400px]">
+        <ResponsiveContainer width="100%" height="100%" minHeight={400}>
           <BarChart
             data={chartData}
             margin={{ top: 40, right: 20, left: 0, bottom: 160 }}

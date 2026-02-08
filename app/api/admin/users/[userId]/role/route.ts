@@ -1,13 +1,18 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase';
 import { isAdmin } from '@/lib/utils/admin';
 import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
 
 /**
- * Route API pour lister les utilisateurs avec leurs profils (admin uniquement)
+ * Route API pour mettre à jour le rôle d'un utilisateur
+ * PUT /api/admin/users/[userId]/role
+ * Body: { role: 'user' | 'admin' | 'moderator' }
  */
-export async function GET() {
+export async function PUT(
+  request: NextRequest,
+  { params }: { params: { userId: string } }
+) {
   try {
     // Vérifier l'authentification de l'utilisateur actuel
     const cookieStore = await cookies();
@@ -49,46 +54,43 @@ export async function GET() {
       );
     }
 
-    // Récupérer tous les utilisateurs
-    const { data: usersData, error: usersError } =
-      await supabaseAdmin.auth.admin.listUsers();
+    // Récupérer le nouveau rôle depuis le body
+    const body = await request.json();
+    const { role } = body;
 
-    if (usersError) {
-      console.error('Error listing users:', usersError);
+    if (!role || !['user', 'admin', 'moderator'].includes(role)) {
       return NextResponse.json(
-        { error: usersError.message },
+        { error: 'Invalid role. Must be: user, admin, or moderator' },
+        { status: 400 }
+      );
+    }
+
+    const userId = params.userId;
+
+    // Mettre à jour le rôle dans profiles
+    const { data, error } = await supabaseAdmin
+      .from('profiles')
+      .update({ role })
+      .eq('id', userId)
+      .select()
+      .single();
+
+    if (error) {
+      console.error('Error updating user role:', error);
+      return NextResponse.json(
+        { error: error.message },
         { status: 500 }
       );
     }
 
-    // Récupérer les profils avec les rôles
-    const userIds = usersData.users.map((u) => u.id);
-    const { data: profilesData, error: profilesError } = await supabaseAdmin
-      .from('profiles')
-      .select('id, role, first_name, last_name')
-      .in('id', userIds);
-
-    if (profilesError) {
-      console.error('Error fetching profiles:', profilesError);
-      // Continuer même si les profils ne peuvent pas être chargés
-    }
-
-    // Combiner les utilisateurs avec leurs profils
-    const usersWithProfiles = usersData.users.map((user) => {
-      const profile = profilesData?.find((p) => p.id === user.id);
-      return {
-        ...user,
-        profile: profile
-          ? {
-              role: profile.role || 'user',
-              first_name: profile.first_name,
-              last_name: profile.last_name,
-            }
-          : undefined,
-      };
+    return NextResponse.json({
+      success: true,
+      user: {
+        id: data.id,
+        email: data.email,
+        role: data.role,
+      },
     });
-
-    return NextResponse.json({ users: usersWithProfiles });
   } catch (err) {
     console.error('Error:', err);
     return NextResponse.json(

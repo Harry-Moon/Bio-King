@@ -20,8 +20,9 @@ import {
   ShieldCheck,
 } from 'lucide-react';
 import { UserMenu } from '@/components/auth/user-menu';
-import { isAdmin } from '@/lib/utils/admin';
 import { useAuth } from '@/components/auth/auth-provider';
+import { useProfile } from '@/components/auth/use-profile';
+import { isAdminSync } from '@/lib/utils/admin';
 
 const navItems = [
   {
@@ -64,9 +65,13 @@ const navItems = [
 export function Sidebar() {
   const pathname = usePathname();
   const { user } = useAuth();
+  const { profile } = useProfile();
   const [isOpen, setIsOpen] = useState(true);
   const [isHovering, setIsHovering] = useState(false);
-  const userIsAdmin = isAdmin(user);
+  
+  // Vérifier le statut admin de manière synchrone avec le profil chargé
+  // Le profil se charge maintenant correctement grâce à la migration RLS corrigée
+  const userIsAdmin = isAdminSync(user, profile);
 
   return (
     <aside
