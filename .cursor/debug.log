@@ -347,3 +347,11 @@
 {"location":"auth-provider.tsx:22","message":"AuthProvider render start","data":{"windowDefined":false,"isServer":true},"timestamp":1770568196140,"runId":"run1","hypothesisId":"A"}
 {"location":"auth-provider.tsx:22","message":"AuthProvider render start","data":{"windowDefined":true,"isServer":false},"timestamp":1770568280521,"runId":"run1","hypothesisId":"A"}
 {"location":"auth-provider.tsx:22","message":"AuthProvider render start","data":{"windowDefined":true,"isServer":false},"timestamp":1770568280522,"runId":"run1","hypothesisId":"A"}
+{"location":"auth-provider.tsx:22","message":"AuthProvider render start","data":{"windowDefined":true,"isServer":false},"timestamp":1770568315954,"runId":"run1","hypothesisId":"A"}
+{"location":"auth-provider.tsx:22","message":"AuthProvider render start","data":{"windowDefined":true,"isServer":false},"timestamp":1770568315955,"runId":"run1","hypothesisId":"A"}
+{"location":"auth-provider.tsx:22","message":"AuthProvider render start","data":{"windowDefined":true,"isServer":false},"timestamp":1770568739349,"runId":"run1","hypothesisId":"A"}
+{"location":"auth-provider.tsx:22","message":"AuthProvider render start","data":{"windowDefined":true,"isServer":false},"timestamp":1770568739351,"runId":"run1","hypothesisId":"A"}
+{"location":"auth-provider.tsx:22","message":"AuthProvider render start","data":{"windowDefined":true,"isServer":false},"timestamp":1770568742212,"runId":"run1","hypothesisId":"A"}
+{"location":"auth-provider.tsx:22","message":"AuthProvider render start","data":{"windowDefined":true,"isServer":false},"timestamp":1770568742213,"runId":"run1","hypothesisId":"A"}
+{"location":"auth-provider.tsx:22","message":"AuthProvider render start","data":{"windowDefined":true,"isServer":false},"timestamp":1770569358495,"runId":"run1","hypothesisId":"A"}
+{"location":"auth-provider.tsx:22","message":"AuthProvider render start","data":{"windowDefined":true,"isServer":false},"timestamp":1770569358496,"runId":"run1","hypothesisId":"A"}
