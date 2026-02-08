@@ -18,9 +18,8 @@ export async function uploadUserAvatar(
   filename?: string
 ): Promise<string> {
   // Générer le nom de fichier si non fourni
-  const fileExtension = file instanceof File 
-    ? file.name.split('.').pop() || 'jpg'
-    : 'jpg';
+  const fileExtension =
+    file instanceof File ? file.name.split('.').pop() || 'jpg' : 'jpg';
   const avatarFilename = filename || `avatar.${fileExtension}`;
   const filePath = `${userId}/${avatarFilename}`;
 
@@ -57,9 +56,7 @@ export async function deleteUserAvatar(
   userId: string,
   filename?: string
 ): Promise<void> {
-  const filePath = filename 
-    ? `${userId}/${filename}`
-    : `${userId}/avatar.jpg`; // Par défaut, supprimer avatar.jpg
+  const filePath = filename ? `${userId}/${filename}` : `${userId}/avatar.jpg`; // Par défaut, supprimer avatar.jpg
 
   const { error } = await supabase.storage
     .from(STORAGE_BUCKETS.USER_AVATARS)
@@ -84,7 +81,7 @@ export function getUserAvatarUrl(
   const { data } = supabase.storage
     .from(STORAGE_BUCKETS.USER_AVATARS)
     .getPublicUrl(filePath);
-  
+
   return data.publicUrl;
 }
 
@@ -101,9 +98,8 @@ export async function uploadProductCover(
   filename?: string
 ): Promise<string> {
   // Générer le nom de fichier si non fourni
-  const fileExtension = file instanceof File 
-    ? file.name.split('.').pop() || 'jpg'
-    : 'jpg';
+  const fileExtension =
+    file instanceof File ? file.name.split('.').pop() || 'jpg' : 'jpg';
   const coverFilename = filename || `cover.${fileExtension}`;
   const filePath = `${productId}/${coverFilename}`;
 
@@ -146,7 +142,7 @@ export function getProductCoverUrl(
   const { data } = supabase.storage
     .from(STORAGE_BUCKETS.PRODUCT_COVERS)
     .getPublicUrl(filePath);
-  
+
   return data.publicUrl;
 }
 
@@ -159,7 +155,7 @@ export async function deleteProductCover(
   productId: string,
   filename?: string
 ): Promise<void> {
-  const filePath = filename 
+  const filePath = filename
     ? `${productId}/${filename}`
     : `${productId}/cover.jpg`; // Par défaut, supprimer cover.jpg
 
@@ -182,7 +178,7 @@ export async function deleteProductCover(
  */
 export function validateImageFile(
   file: File,
-  maxSizeMB: number = 5
+  maxSizeMB = 5
 ): { valid: boolean; error?: string } {
   // Vérifier le type MIME
   const allowedTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];

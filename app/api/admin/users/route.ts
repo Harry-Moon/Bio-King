@@ -55,10 +55,7 @@ export async function GET() {
 
     if (usersError) {
       console.error('Error listing users:', usersError);
-      return NextResponse.json(
-        { error: usersError.message },
-        { status: 500 }
-      );
+      return NextResponse.json({ error: usersError.message }, { status: 500 });
     }
 
     // Récupérer les profils avec les rôles

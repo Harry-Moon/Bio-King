@@ -15,7 +15,9 @@ import {
 /**
  * Récupère tous les produits (actifs et inactifs pour les admins)
  */
-export async function getAllProducts(includeInactive = true): Promise<BioProduct[]> {
+export async function getAllProducts(
+  includeInactive = true
+): Promise<BioProduct[]> {
   return getAllProductsFromDB(includeInactive);
 }
 

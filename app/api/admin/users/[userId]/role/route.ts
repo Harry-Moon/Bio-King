@@ -77,10 +77,7 @@ export async function PUT(
 
     if (error) {
       console.error('Error updating user role:', error);
-      return NextResponse.json(
-        { error: error.message },
-        { status: 500 }
-      );
+      return NextResponse.json({ error: error.message }, { status: 500 });
     }
 
     return NextResponse.json({

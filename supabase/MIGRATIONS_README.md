@@ -55,6 +55,7 @@ supabase migration up
 **Objectif**: Créer la table `marketplace_products` alignée avec le type TypeScript `BioProduct`.
 
 **Changements**:
+
 - Nouvelle table `marketplace_products` avec tous les champs nécessaires
 - Support JSONB pour `badge`, `featured_data`, et `tags`
 - Index optimisés pour les recherches fréquentes
@@ -67,6 +68,7 @@ supabase migration up
 **Objectif**: Garantir l'intégrité des données avec des contraintes CHECK.
 
 **Changements**:
+
 - Validation des âges positifs (`chronological_age`, `system_age`)
 - Validation des prix positifs ou nuls
 - Validation des champs obligatoires non vides
@@ -79,6 +81,7 @@ supabase migration up
 **Objectif**: Optimiser les performances pour 100-1000 utilisateurs.
 
 **Changements**:
+
 - Index composites pour les recherches fréquentes
 - Index partiels sur les produits actifs uniquement
 - Index GIN pour les recherches dans les arrays JSONB
@@ -90,6 +93,7 @@ supabase migration up
 **Objectif**: Créer la table pour stocker les protocoles utilisateur de la marketplace.
 
 **Changements**:
+
 - Nouvelle table `user_protocols` avec support JSONB pour les items
 - RLS complet avec politiques CRUD pour les utilisateurs
 - Contraintes de validation (prix positif, semaine valide)
@@ -101,6 +105,7 @@ supabase migration up
 **Objectif**: Compléter les politiques RLS et ajouter la documentation.
 
 **Changements**:
+
 - Politiques DELETE manquantes pour toutes les tables
 - Commentaires de documentation sur toutes les colonnes importantes
 
@@ -117,7 +122,7 @@ INSERT INTO marketplace_products (
   billing_model, display_type, is_hero, tags, primary_system,
   secondary_systems, clinical_references, is_active, created_at, updated_at
 )
-SELECT 
+SELECT
   id::uuid,
   name,
   category,
@@ -168,15 +173,15 @@ Pour vérifier que tout est correct :
 SELECT COUNT(*) FROM marketplace_products;
 
 -- Vérifier les contraintes
-SELECT conname, contype FROM pg_constraint 
+SELECT conname, contype FROM pg_constraint
 WHERE conrelid = 'marketplace_products'::regclass;
 
 -- Vérifier les index
-SELECT indexname FROM pg_indexes 
+SELECT indexname FROM pg_indexes
 WHERE tablename = 'marketplace_products';
 
 -- Vérifier les politiques RLS
-SELECT schemaname, tablename, policyname 
-FROM pg_policies 
+SELECT schemaname, tablename, policyname
+FROM pg_policies
 WHERE tablename = 'marketplace_products';
 ```

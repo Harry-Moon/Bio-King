@@ -24,7 +24,7 @@ export default function RootLayout({
     console.log('[DEBUG] RootLayout rendering on server');
   }
   // #endregion
-  
+
   return (
     <html lang="fr">
       <body className={inter.className}>

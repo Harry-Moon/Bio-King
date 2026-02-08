@@ -49,11 +49,11 @@ export function ItemBuilder({
   // Mettre à jour le formData quand le produit change
   // Utiliser une ref pour éviter les mises à jour pendant l'upload
   const isUploadingRef = useRef(false);
-  
+
   useEffect(() => {
     // Ne pas mettre à jour si on est en train d'uploader
     if (isUploadingRef.current) return;
-    
+
     setFormData(product);
     setClinicalRefs(product.clinicalReferences?.join('\n') || '');
   }, [product]);
@@ -184,7 +184,7 @@ export function ItemBuilder({
                         }
 
                         const data = await response.json();
-                        
+
                         // Mettre à jour le formData avec l'URL de l'image uploadée
                         // L'API a déjà mis à jour le produit dans la DB, donc on met juste à jour l'état local
                         // Ne pas déclencher de mise à jour du produit parent pour éviter la réouverture de la popin

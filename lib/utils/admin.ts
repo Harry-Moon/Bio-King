@@ -8,14 +8,14 @@ import { supabase } from '@/lib/supabase';
  */
 export async function isAdmin(user: User | null): Promise<boolean> {
   if (!user?.id) return false;
-  
+
   try {
     const { data, error } = await supabase
       .from('profiles')
       .select('role')
       .eq('id', user.id)
       .single();
-    
+
     if (error || !data) return false;
     return data.role === 'admin';
   } catch (error) {

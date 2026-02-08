@@ -75,6 +75,8 @@ export default function AdminUsersPage() {
                 profile: {
                   ...user.profile,
                   role: newRole as 'user' | 'admin' | 'moderator',
+                  first_name: user.profile?.first_name ?? null,
+                  last_name: user.profile?.last_name ?? null,
                 },
               }
             : user

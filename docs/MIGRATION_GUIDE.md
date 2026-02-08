@@ -3,6 +3,7 @@
 ## Vue d'ensemble
 
 Ce guide explique comment appliquer les migrations pour :
+
 1. ✅ Ajouter le système de rôles utilisateur (admin/user)
 2. ✅ Supprimer la table legacy `catalog_items`
 3. ✅ Migrer les données mockup vers `marketplace_products`
@@ -17,24 +18,30 @@ Ce guide explique comment appliquer les migrations pour :
 2. **Exécuter dans l'ordre** :
 
 #### Migration 010 : Système de rôles
+
 ```sql
 -- Copier-coller le contenu de supabase/migrations/010_add_user_roles.sql
 ```
+
 - ✅ Ajoute la colonne `role` à `profiles`
 - ✅ Met à jour `harry@citizenvitae.com` en admin
 - ✅ Crée les policies RLS pour les admins
 
 #### Migration 011 : Supprimer catalog_items
+
 ```sql
 -- Copier-coller le contenu de supabase/migrations/011_remove_catalog_items.sql
 ```
+
 - ✅ Vérifie qu'il n'y a pas de données
 - ✅ Supprime la table `catalog_items`
 
 #### Migration 012 : Migrer les données mockup
+
 ```sql
 -- Copier-coller le contenu de supabase/migrations/012_migrate_mockup_data.sql
 ```
+
 - ✅ Insère les 6 produits de démonstration dans `marketplace_products`
 
 ### Option B : Via CLI Supabase (si configuré)
@@ -51,8 +58,8 @@ supabase migration up
 
 ```sql
 -- Vérifier que harry@citizenvitae.com est admin
-SELECT id, email, role 
-FROM profiles 
+SELECT id, email, role
+FROM profiles
 WHERE email = 'harry@citizenvitae.com';
 -- Résultat attendu : role = 'admin'
 ```
@@ -61,8 +68,8 @@ WHERE email = 'harry@citizenvitae.com';
 
 ```sql
 -- Vérifier les produits dans marketplace_products
-SELECT id, name, category, type, is_active 
-FROM marketplace_products 
+SELECT id, name, category, type, is_active
+FROM marketplace_products
 ORDER BY created_at;
 -- Résultat attendu : 6 produits
 ```
@@ -71,8 +78,8 @@ ORDER BY created_at;
 
 ```sql
 -- Vérifier que la table n'existe plus
-SELECT table_name 
-FROM information_schema.tables 
+SELECT table_name
+FROM information_schema.tables
 WHERE table_schema = 'public' AND table_name = 'catalog_items';
 -- Résultat attendu : 0 lignes
 ```
@@ -116,6 +123,7 @@ WHERE table_schema = 'public' AND table_name = 'catalog_items';
 ### 1. Système de Rôles
 
 **Fichiers modifiés** :
+
 - ✅ `lib/utils/admin.ts` : Utilise maintenant la DB au lieu d'une liste hardcodée
 - ✅ `components/auth/use-profile.tsx` : Nouveau hook pour charger le profil avec le rôle
 - ✅ `components/layout/sidebar.tsx` : Utilise `useProfile` et `isAdminSync`
@@ -124,6 +132,7 @@ WHERE table_schema = 'public' AND table_name = 'catalog_items';
 - ✅ `app/admin/users/page.tsx` : Interface pour gérer les rôles
 
 **Nouvelles fonctionnalités** :
+
 - Les admins peuvent maintenant changer les rôles depuis `/admin/users`
 - Le système vérifie les rôles en base de données (plus de hardcode)
 - Policies RLS basées sur les rôles
@@ -131,6 +140,7 @@ WHERE table_schema = 'public' AND table_name = 'catalog_items';
 ### 2. Migration des Données Mockup
 
 **Fichiers modifiés** :
+
 - ✅ `lib/data/admin-products.ts` : Utilise maintenant Supabase (fonctions async)
 - ✅ `lib/data/marketplace-products-db.ts` : Nouveau fichier avec les fonctions Supabase
 - ✅ `app/admin/catalog/page.tsx` : Utilise les fonctions async
@@ -138,6 +148,7 @@ WHERE table_schema = 'public' AND table_name = 'catalog_items';
 - ✅ `app/marketplace/[id]/page.tsx` : Charge le produit depuis Supabase
 
 **Changements** :
+
 - Toutes les fonctions sont maintenant `async`
 - Les produits sont chargés depuis `marketplace_products` en DB
 - Plus de mock store en mémoire
@@ -176,16 +187,20 @@ WHERE table_schema = 'public' AND table_name = 'catalog_items';
 ## Dépannage
 
 ### Erreur : "role column does not exist"
+
 - **Solution** : Exécuter `010_add_user_roles.sql` dans Supabase SQL Editor
 
 ### Erreur : "catalog_items does not exist" lors de la suppression
+
 - **Solution** : C'est normal si la table n'existe pas. La migration vérifie avant de supprimer.
 
 ### Les produits n'apparaissent pas dans la marketplace
+
 - **Vérifier** : Que la migration `012_migrate_mockup_data.sql` a été exécutée
 - **Vérifier** : Que `is_active = true` pour les produits
 
 ### L'utilisateur harry@citizenvitae.com n'est pas admin
+
 - **Vérifier** : Que la migration `010_add_user_roles.sql` a été exécutée
 - **Vérifier** : Que l'email correspond exactement (case-sensitive)
 
@@ -194,6 +209,7 @@ WHERE table_schema = 'public' AND table_name = 'catalog_items';
 ## Support
 
 En cas de problème, vérifier :
+
 1. Les logs dans la console du navigateur
 2. Les logs Supabase (Logs > API ou Logs > Postgres)
 3. Les erreurs dans le SQL Editor de Supabase

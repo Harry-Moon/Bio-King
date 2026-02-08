@@ -30,11 +30,13 @@ Ce document décrit le processus complet d'extraction et de visualisation des do
 **Fichier** : `app/upload/page.tsx`
 
 **Fonctionnalités** :
+
 - Interface drag-and-drop pour sélectionner un fichier PDF
 - Validation côté client (type PDF, taille max 50MB)
 - Affichage de l'état d'upload (idle, uploading, success, error)
 
 **Composants utilisés** :
+
 - `react-dropzone` pour la gestion du drag-and-drop
 - `useAuth` pour récupérer l'utilisateur connecté
 
@@ -45,6 +47,7 @@ Ce document décrit le processus complet d'extraction et de visualisation des do
 **Processus détaillé** :
 
 1. **Réception du fichier**
+
    ```typescript
    const formData = await request.formData();
    const file = formData.get('file') as File;
@@ -57,6 +60,7 @@ Ce document décrit le processus complet d'extraction et de visualisation des do
    - Vérification de la présence du userId
 
 3. **Upload vers Supabase Storage**
+
    ```typescript
    const filePath = `${userId}/${uniqueFilename}`;
    await supabaseAdmin.storage
@@ -66,10 +70,12 @@ Ce document décrit le processus complet d'extraction et de visualisation des do
        upsert: false,
      });
    ```
+
    - Le fichier est stocké dans le bucket `systemage-reports`
    - Structure : `{userId}/{timestamp}-{originalFilename}.pdf`
 
 4. **Création de l'entrée dans la base de données**
+
    ```typescript
    await supabaseAdmin.from('systemage_reports').insert({
      user_id: userId,
@@ -94,10 +100,12 @@ Ce document décrit le processus complet d'extraction et de visualisation des do
      }),
    });
    ```
+
    - L'appel est **non-bloquant** (ne bloque pas la réponse à l'utilisateur)
    - L'extraction se fait en arrière-plan
 
 **Réponse API** :
+
 ```json
 {
   "success": true,
@@ -118,6 +126,7 @@ Ce document décrit le processus complet d'extraction et de visualisation des do
 **Processus détaillé** :
 
 #### Étape 1 : Mise à jour du statut
+
 ```typescript
 await supabaseAdmin
   .from('systemage_reports')
@@ -126,9 +135,11 @@ await supabaseAdmin
 ```
 
 #### Étape 2 : Téléchargement du PDF depuis Storage
+
 ```typescript
 const pdfBuffer = await downloadPdf(pdfUrl);
 ```
+
 - Utilise `lib/utils/pdf.ts` pour télécharger le fichier depuis Supabase Storage
 - Retourne un `Buffer` Node.js
 
@@ -139,6 +150,7 @@ const pdfBuffer = await downloadPdf(pdfUrl);
 **Processus OpenAI** :
 
 1. **Upload du fichier vers OpenAI**
+
    ```typescript
    const pdfFile = new File([uint8Array], 'report.pdf', {
      type: 'application/pdf',
@@ -150,6 +162,7 @@ const pdfBuffer = await downloadPdf(pdfUrl);
    ```
 
 2. **Création d'un Assistant temporaire**
+
    ```typescript
    const assistant = await openai.beta.assistants.create({
      name: 'SystemAge Report Extractor',
@@ -158,48 +171,60 @@ const pdfBuffer = await downloadPdf(pdfUrl);
      tools: [{ type: 'file_search' }],
    });
    ```
+
    - Modèle utilisé : **GPT-4o** (optimisé pour la vision et l'analyse de documents)
    - L'assistant est configuré pour extraire uniquement des données JSON
 
 3. **Création d'un Thread avec le PDF**
+
    ```typescript
    const thread = await openai.beta.threads.create({
-     messages: [{
-       role: 'user',
-       content: SYSTEMAGE_EXTRACTION_PROMPT,
-       attachments: [{
-         file_id: file.id,
-         tools: [{ type: 'file_search' }],
-       }],
-     }],
+     messages: [
+       {
+         role: 'user',
+         content: SYSTEMAGE_EXTRACTION_PROMPT,
+         attachments: [
+           {
+             file_id: file.id,
+             tools: [{ type: 'file_search' }],
+           },
+         ],
+       },
+     ],
    });
    ```
+
    - Le prompt d'extraction (`SYSTEMAGE_EXTRACTION_PROMPT`) est fourni dans `lib/prompts/extraction.ts`
    - Le PDF est attaché au thread via `file_id`
 
 4. **Exécution de l'assistant**
+
    ```typescript
    const run = await openai.beta.threads.runs.createAndPoll(thread.id, {
      assistant_id: assistant.id,
    });
    ```
+
    - `createAndPoll` attend la fin de l'exécution automatiquement
    - L'assistant lit le PDF, extrait les données selon le prompt
 
 5. **Récupération de la réponse JSON**
-   ```typescript
+
+   ````typescript
    const messages = await openai.beta.threads.messages.list(thread.id);
-   const assistantMessage = messages.data.find(msg => msg.role === 'assistant');
+   const assistantMessage = messages.data.find(
+     (msg) => msg.role === 'assistant'
+   );
    let responseText = content.text.value;
-   
+
    // Nettoyage des balises markdown si présentes
    if (responseText.includes('```json')) {
      const jsonMatch = responseText.match(/```json\s*([\s\S]*?)\s*```/);
      responseText = jsonMatch[1].trim();
    }
-   
+
    const extractedData: ExtractedSystemAgeData = JSON.parse(responseText);
-   ```
+   ````
 
 6. **Nettoyage des ressources**
    ```typescript
@@ -210,6 +235,7 @@ const pdfBuffer = await downloadPdf(pdfUrl);
 #### Étape 4 : Normalisation des données
 
 **Données extraites par OpenAI** :
+
 ```typescript
 interface ExtractedSystemAgeData {
   chronologicalAge: number;
@@ -236,6 +262,7 @@ interface ExtractedSystemAgeData {
 ```
 
 **Normalisations effectuées** :
+
 - Uniformisation des noms de systèmes (ex: "Blood Sugar and Insulin Control" → "Blood Sugar & Insulin Control")
 - Calcul automatique de `ageDifference` si manquant : `systemAge - chronologicalAge`
 - Inférence de `agingStage` si manquant :
@@ -249,6 +276,7 @@ interface ExtractedSystemAgeData {
 **Fichier** : `lib/validations/systemage.ts`
 
 **Validations effectuées** :
+
 - Vérification de la présence des 19 systèmes corporels obligatoires
 - Vérification des plages de valeurs réalistes :
   - `chronologicalAge` : 0-150 ans
@@ -258,9 +286,11 @@ interface ExtractedSystemAgeData {
 - Vérification de la présence d'au moins quelques recommandations
 
 **Calcul de la confiance** :
+
 ```typescript
 const confidence = calculateExtractionConfidence(validatedData);
 ```
+
 - Score de 0-100% basé sur :
   - Nombre de systèmes extraits (19 = 100%)
   - Présence de recommandations
@@ -272,22 +302,27 @@ const confidence = calculateExtractionConfidence(validatedData);
 **3 tables mises à jour** :
 
 1. **`systemage_reports`** (mise à jour)
+
    ```typescript
-   await supabaseAdmin.from('systemage_reports').update({
-     chronological_age: validatedData.chronologicalAge,
-     overall_system_age: validatedData.overallSystemAge,
-     aging_rate: validatedData.agingRate,
-     aging_stage: validatedData.agingStage,
-     overall_bionoise: validatedData.overallBioNoise,
-     extraction_status: 'completed', // ✅ Statut final
-     extraction_confidence: confidence,
-     raw_extraction_data: normalizedData, // JSON brut sauvegardé
-   }).eq('id', reportId);
+   await supabaseAdmin
+     .from('systemage_reports')
+     .update({
+       chronological_age: validatedData.chronologicalAge,
+       overall_system_age: validatedData.overallSystemAge,
+       aging_rate: validatedData.agingRate,
+       aging_stage: validatedData.agingStage,
+       overall_bionoise: validatedData.overallBioNoise,
+       extraction_status: 'completed', // ✅ Statut final
+       extraction_confidence: confidence,
+       raw_extraction_data: normalizedData, // JSON brut sauvegardé
+     })
+     .eq('id', reportId);
    ```
 
 2. **`body_systems`** (insertion des 19 systèmes)
+
    ```typescript
-   const bodySystems = validatedData.bodySystems.map(system => ({
+   const bodySystems = validatedData.bodySystems.map((system) => ({
      report_id: reportId,
      system_name: system.systemName,
      system_age: system.systemAge,
@@ -297,14 +332,15 @@ const confidence = calculateExtractionConfidence(validatedData);
      aging_speed: system.agingSpeed ?? null,
      percentile_rank: system.percentileRank || null,
    }));
-   
+
    await supabaseAdmin.from('body_systems').insert(bodySystems);
    ```
 
 3. **`recommendations`** (insertion des recommandations)
+
    ```typescript
    const recommendations = [
-     ...validatedData.recommendations.nutritional.map(rec => ({
+     ...validatedData.recommendations.nutritional.map((rec) => ({
        report_id: reportId,
        type: 'nutritional',
        title: rec.title,
@@ -314,11 +350,12 @@ const confidence = calculateExtractionConfidence(validatedData);
      })),
      // ... fitness et therapy
    ];
-   
+
    await supabaseAdmin.from('recommendations').insert(recommendations);
    ```
 
 **Gestion des erreurs** :
+
 - En cas d'erreur, le statut est mis à `'failed'`
 - L'erreur est sauvegardée dans `raw_extraction_data`
 - L'utilisateur peut réessayer l'extraction
@@ -351,11 +388,12 @@ const { data: reports } = await supabase
 **Fichier** : `lib/utils/supabase-mappers.ts`
 
 **Conversion snake_case → camelCase** :
+
 ```typescript
 export function mapSupabaseReport(data: any): SystemAgeReport {
   return {
     id: data.id,
-    userId: data.user_id,           // snake_case → camelCase
+    userId: data.user_id, // snake_case → camelCase
     pdfUrl: data.pdf_url,
     uploadDate: new Date(data.upload_date),
     chronologicalAge: data.chronological_age,
@@ -376,10 +414,7 @@ const [systemsResult, recsResult] = await Promise.all([
     .select('*')
     .eq('report_id', reportId)
     .order('age_difference', { ascending: false }),
-  supabase
-    .from('recommendations')
-    .select('*')
-    .eq('report_id', reportId),
+  supabase.from('recommendations').select('*').eq('report_id', reportId),
 ]);
 
 const systems = systemsResult.data.map(mapSupabaseBodySystem);
@@ -393,6 +428,7 @@ const recommendations = recsResult.data.map(mapSupabaseRecommendation);
 **Composant** : `components/dashboard/system-gauge.tsx`
 
 **Affichage** :
+
 - Score global d'âge systémique vs âge chronologique
 - Jauge circulaire avec indicateur visuel
 - Badge de stade de vieillissement (Prime/Plateau/Accelerated)
@@ -403,6 +439,7 @@ const recommendations = recsResult.data.map(mapSupabaseRecommendation);
 **Composant** : `components/dashboard/system-card.tsx`
 
 **Affichage pour chaque système** :
+
 - Nom du système
 - Âge du système vs âge chronologique
 - Différence d'âge (`ageDifference`)
@@ -420,6 +457,7 @@ const recommendations = recsResult.data.map(mapSupabaseRecommendation);
 **Composant** : `components/dashboard/system-comparison-chart.tsx`
 
 **Visualisation** :
+
 - Graphique en barres comparant les 19 systèmes
 - Axe X : Systèmes corporels
 - Axe Y : Âge du système
@@ -431,6 +469,7 @@ const recommendations = recsResult.data.map(mapSupabaseRecommendation);
 **Composant** : `components/dashboard/entropy-curve.tsx`
 
 **Visualisation** :
+
 - Courbe montrant la relation entre âge chronologique et âge systémique
 - Zones colorées pour les différents stades
 - Point marquant la position actuelle de l'utilisateur
@@ -440,11 +479,13 @@ const recommendations = recsResult.data.map(mapSupabaseRecommendation);
 **Composant** : `components/dashboard/recommendation-card.tsx`
 
 **Affichage par type** :
+
 - **Nutritional** : Suppléments, aliments recommandés
 - **Fitness** : Exercices et activités physiques
 - **Therapy** : Interventions thérapeutiques
 
 **Pour chaque recommandation** :
+
 - Titre
 - Description détaillée
 - Systèmes ciblés (badges)
@@ -453,6 +494,7 @@ const recommendations = recsResult.data.map(mapSupabaseRecommendation);
 #### 4.2.6 Top Aging Factors
 
 **Affichage** :
+
 - Liste des systèmes vieillissant le plus rapidement
 - Raison du vieillissement accéléré
 - Priorisation visuelle
@@ -462,6 +504,7 @@ const recommendations = recsResult.data.map(mapSupabaseRecommendation);
 **Composant** : `components/dashboard/last-upload-info.tsx`
 
 **Affichage** :
+
 - Date du dernier upload
 - Statut d'extraction (`pending`, `processing`, `completed`, `failed`)
 - Score de confiance de l'extraction
@@ -473,12 +516,12 @@ const recommendations = recsResult.data.map(mapSupabaseRecommendation);
 
 ### 5.1 Statuts possibles
 
-| Statut | Description | Action utilisateur |
-|--------|-------------|-------------------|
-| `pending` | Upload réussi, extraction en attente | Attendre ou vérifier les logs |
-| `processing` | Extraction en cours avec OpenAI | Attendre (peut prendre 30-60 secondes) |
-| `completed` | Extraction réussie, données disponibles | Consulter le dashboard |
-| `failed` | Erreur lors de l'extraction | Réessayer l'upload ou contacter le support |
+| Statut       | Description                             | Action utilisateur                         |
+| ------------ | --------------------------------------- | ------------------------------------------ |
+| `pending`    | Upload réussi, extraction en attente    | Attendre ou vérifier les logs              |
+| `processing` | Extraction en cours avec OpenAI         | Attendre (peut prendre 30-60 secondes)     |
+| `completed`  | Extraction réussie, données disponibles | Consulter le dashboard                     |
+| `failed`     | Erreur lors de l'extraction             | Réessayer l'upload ou contacter le support |
 
 ### 5.2 Polling du statut (optionnel)
 
@@ -532,6 +575,7 @@ CREATE TABLE body_systems (
 ```
 
 **Les 19 systèmes obligatoires** :
+
 1. Auditory System
 2. Muscular System
 3. Blood Sugar & Insulin Control
@@ -574,6 +618,7 @@ CREATE TABLE recommendations (
 **Fichier** : `lib/prompts/extraction.ts`
 
 **Structure du prompt** :
+
 - Instructions précises sur le format JSON attendu
 - Liste exhaustive des 19 systèmes à extraire
 - Règles de calcul (ex: `ageDifference = systemAge - chronologicalAge`)
@@ -581,6 +626,7 @@ CREATE TABLE recommendations (
 - Format de sortie strict (JSON pur, pas de markdown)
 
 **Points critiques** :
+
 - Le prompt insiste sur l'extraction de **TOUS** les 19 systèmes
 - Format JSON strict (pas de markdown, pas d'explications)
 - Gestion des valeurs manquantes (utiliser `null`, pas `0`)
@@ -660,12 +706,14 @@ CREATE TABLE recommendations (
 ### 11.1 Extraction échoue (`status: 'failed'`)
 
 **Causes possibles** :
+
 - PDF corrompu ou illisible
 - Format PDF non standard
 - Erreur OpenAI (rate limit, timeout)
 - Erreur de validation des données
 
 **Solutions** :
+
 - Vérifier les logs dans `raw_extraction_data`
 - Réessayer l'upload
 - Vérifier que le PDF est bien un rapport SystemAge valide
@@ -673,17 +721,20 @@ CREATE TABLE recommendations (
 ### 11.2 Données incomplètes
 
 **Vérifications** :
+
 - Nombre de systèmes extraits (doit être 19)
 - Score de confiance (`extraction_confidence`)
 - Logs dans `raw_extraction_data`
 
 **Solutions** :
+
 - Si confiance < 70%, considérer ré-extraire
 - Vérifier manuellement les données dans `raw_extraction_data`
 
 ### 11.3 Performance lente
 
 **Optimisations** :
+
 - Vérifier la taille du PDF (optimiser si > 10MB)
 - Vérifier les index de la base de données
 - Mettre en cache les données du dashboard

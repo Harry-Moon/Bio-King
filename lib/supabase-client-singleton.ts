@@ -1,7 +1,7 @@
 /**
  * Singleton pour le client Supabase côté client
  * Évite les instances multiples de GoTrueClient
- * 
+ *
  * NOTE: Ce fichier n'est plus utilisé directement.
  * Utilisez plutôt lib/supabase.ts qui gère à la fois client et serveur.
  */

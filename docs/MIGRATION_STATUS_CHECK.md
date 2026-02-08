@@ -9,7 +9,7 @@
 
 ```sql
 -- Vérifier l'existence des nouvelles tables
-SELECT 
+SELECT
   table_name,
   table_type
 FROM information_schema.tables
@@ -27,7 +27,7 @@ ORDER BY table_name;
 
 ```sql
 -- Vérifier les contraintes de validation
-SELECT 
+SELECT
   conname AS constraint_name,
   conrelid::regclass AS table_name
 FROM pg_constraint
@@ -37,6 +37,7 @@ ORDER BY table_name, constraint_name;
 ```
 
 **Résultat attendu** : Vous devriez voir des contraintes comme :
+
 - `check_positive_chronological_age`
 - `check_positive_system_age`
 - `check_body_positive_system_age`
@@ -47,7 +48,7 @@ ORDER BY table_name, constraint_name;
 
 ```sql
 -- Vérifier les index créés
-SELECT 
+SELECT
   indexname,
   tablename
 FROM pg_indexes
@@ -57,6 +58,7 @@ ORDER BY tablename, indexname;
 ```
 
 **Résultat attendu** : Plusieurs index doivent être présents, notamment :
+
 - `idx_reports_user_date`
 - `idx_body_systems_report_age_diff`
 - `idx_marketplace_products_category_active`
@@ -66,7 +68,7 @@ ORDER BY tablename, indexname;
 
 ```sql
 -- Vérifier les politiques DELETE
-SELECT 
+SELECT
   schemaname,
   tablename,
   policyname
@@ -76,6 +78,7 @@ ORDER BY tablename, policyname;
 ```
 
 **Résultat attendu** : Des politiques DELETE pour :
+
 - `systemage_reports`
 - `chat_conversations`
 - `action_plans`
@@ -109,9 +112,9 @@ async function checkMigrations() {
     .from('marketplace_products')
     .select('id')
     .limit(1);
-  
+
   if (mktError && mktError.code === '42P01') {
-    console.log('❌ Table marketplace_products n\'existe pas');
+    console.log("❌ Table marketplace_products n'existe pas");
   } else {
     console.log('✅ Table marketplace_products existe');
   }
@@ -121,9 +124,9 @@ async function checkMigrations() {
     .from('user_protocols')
     .select('id')
     .limit(1);
-  
+
   if (protError && protError.code === '42P01') {
-    console.log('❌ Table user_protocols n\'existe pas');
+    console.log("❌ Table user_protocols n'existe pas");
   } else {
     console.log('✅ Table user_protocols existe');
   }
@@ -131,14 +134,16 @@ async function checkMigrations() {
   // 3. Vérifier les contraintes CHECK
   const { data: constraints, error: constError } = await supabaseAdmin.rpc(
     'exec_sql',
-    { query: `
+    {
+      query: `
       SELECT conname 
       FROM pg_constraint 
       WHERE contype = 'c' 
         AND conname LIKE 'check_positive_chronological_age'
-    ` }
+    `,
+    }
   );
-  
+
   if (constraints && constraints.length > 0) {
     console.log('✅ Contraintes CHECK présentes');
   } else {
@@ -154,6 +159,7 @@ checkMigrations();
 ## Indicateurs de Succès
 
 ✅ **Migration réussie si** :
+
 - Les tables `marketplace_products` et `user_protocols` existent
 - Les contraintes CHECK sont présentes
 - Les index de performance sont créés
@@ -161,6 +167,7 @@ checkMigrations();
 - Les commentaires sur les tables sont présents
 
 ❌ **Migration échouée si** :
+
 - Erreur "relation does not exist" lors de l'accès aux tables
 - Contraintes CHECK manquantes
 - Index manquants
@@ -178,6 +185,7 @@ Si la migration n'a pas été appliquée :
 Si la migration a été appliquée :
 
 ✅ **Vous pouvez continuer le développement** sur :
+
 - L'intégration marketplace avec Supabase (remplacer le mock store)
 - La gestion des protocoles utilisateur
 - Les fonctionnalités admin avancées

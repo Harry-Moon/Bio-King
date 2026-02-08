@@ -39,7 +39,9 @@ function mapSupabaseProduct(data: any): BioProduct {
 /**
  * Récupère tous les produits (actifs uniquement pour les non-admins)
  */
-export async function getAllProducts(includeInactive = false): Promise<BioProduct[]> {
+export async function getAllProducts(
+  includeInactive = false
+): Promise<BioProduct[]> {
   let query = supabase.from('marketplace_products').select('*');
 
   if (!includeInactive) {
@@ -128,22 +130,28 @@ export async function updateProduct(
   if (updates.type !== undefined) updateData.type = updates.type;
   if (updates.price !== undefined) updateData.price = updates.price;
   if (updates.currency !== undefined) updateData.currency = updates.currency;
-  if (updates.description !== undefined) updateData.description = updates.description;
+  if (updates.description !== undefined)
+    updateData.description = updates.description;
   if (updates.detailedDescription !== undefined)
     updateData.detailed_description = updates.detailedDescription;
   if (updates.image !== undefined) updateData.image = updates.image;
   if (updates.isHero !== undefined) updateData.is_hero = updates.isHero;
-  if (updates.displayType !== undefined) updateData.display_type = updates.displayType;
-  if (updates.billingModel !== undefined) updateData.billing_model = updates.billingModel;
+  if (updates.displayType !== undefined)
+    updateData.display_type = updates.displayType;
+  if (updates.billingModel !== undefined)
+    updateData.billing_model = updates.billingModel;
   if (updates.badge !== undefined) updateData.badge = updates.badge;
-  if (updates.featuredData !== undefined) updateData.featured_data = updates.featuredData;
+  if (updates.featuredData !== undefined)
+    updateData.featured_data = updates.featuredData;
   if (updates.tags !== undefined) updateData.tags = updates.tags;
-  if (updates.primarySystem !== undefined) updateData.primary_system = updates.primarySystem;
+  if (updates.primarySystem !== undefined)
+    updateData.primary_system = updates.primarySystem;
   if (updates.secondarySystems !== undefined)
     updateData.secondary_systems = updates.secondarySystems;
   if (updates.clinicalReferences !== undefined)
     updateData.clinical_references = updates.clinicalReferences;
-  if (updates.externalLink !== undefined) updateData.external_link = updates.externalLink;
+  if (updates.externalLink !== undefined)
+    updateData.external_link = updates.externalLink;
   if (updates.isActive !== undefined) updateData.is_active = updates.isActive;
 
   const { data, error } = await supabase
@@ -165,7 +173,10 @@ export async function updateProduct(
  * Supprime un produit (admin uniquement)
  */
 export async function deleteProduct(id: string): Promise<boolean> {
-  const { error } = await supabase.from('marketplace_products').delete().eq('id', id);
+  const { error } = await supabase
+    .from('marketplace_products')
+    .delete()
+    .eq('id', id);
 
   if (error) {
     console.error('Error deleting product:', error);

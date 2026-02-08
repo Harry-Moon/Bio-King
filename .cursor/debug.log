@@ -301,3 +301,49 @@
 {"location":"auth-provider.tsx:22","message":"AuthProvider render start","data":{"windowDefined":true,"isServer":false},"timestamp":1770535941624,"runId":"run1","hypothesisId":"A"}
 {"location":"auth-provider.tsx:22","message":"AuthProvider render start","data":{"windowDefined":true,"isServer":false},"timestamp":1770535966057,"runId":"run1","hypothesisId":"A"}
 {"location":"auth-provider.tsx:22","message":"AuthProvider render start","data":{"windowDefined":true,"isServer":false},"timestamp":1770535966057,"runId":"run1","hypothesisId":"A"}
+{"location":"auth-provider.tsx:22","message":"AuthProvider render start","data":{"windowDefined":true,"isServer":false},"timestamp":1770536034849,"runId":"run1","hypothesisId":"A"}
+{"location":"auth-provider.tsx:22","message":"AuthProvider render start","data":{"windowDefined":true,"isServer":false},"timestamp":1770536034849,"runId":"run1","hypothesisId":"A"}
+{"location":"auth-provider.tsx:22","message":"AuthProvider render start","data":{"windowDefined":true,"isServer":false},"timestamp":1770567987544,"runId":"run1","hypothesisId":"A"}
+{"location":"auth-provider.tsx:22","message":"AuthProvider render start","data":{"windowDefined":true,"isServer":false},"timestamp":1770567987544,"runId":"run1","hypothesisId":"A"}
+{"location":"auth-provider.tsx:22","message":"AuthProvider render start","data":{"windowDefined":true,"isServer":false},"timestamp":1770568022796,"runId":"run1","hypothesisId":"A"}
+{"location":"auth-provider.tsx:22","message":"AuthProvider render start","data":{"windowDefined":true,"isServer":false},"timestamp":1770568022797,"runId":"run1","hypothesisId":"A"}
+{"location":"auth-provider.tsx:22","message":"AuthProvider render start","data":{"windowDefined":true,"isServer":false},"timestamp":1770568160014,"runId":"run1","hypothesisId":"A"}
+{"location":"auth-provider.tsx:22","message":"AuthProvider render start","data":{"windowDefined":true,"isServer":false},"timestamp":1770568160015,"runId":"run1","hypothesisId":"A"}
+{"location":"auth-provider.tsx:22","message":"AuthProvider render start","data":{"windowDefined":true,"isServer":false},"timestamp":1770568192665,"runId":"run1","hypothesisId":"A"}
+{"location":"auth-provider.tsx:22","message":"AuthProvider render start","data":{"windowDefined":true,"isServer":false},"timestamp":1770568192666,"runId":"run1","hypothesisId":"A"}
+{"location":"auth-provider.tsx:22","message":"AuthProvider render start","data":{"windowDefined":false,"isServer":true},"timestamp":1770568195975,"runId":"run1","hypothesisId":"A"}
+{"location":"auth-provider.tsx:26","message":"createClient call in useState","data":{"windowDefined":false},"timestamp":1770568195976,"runId":"run1","hypothesisId":"A"}
+{"location":"auth-provider.tsx:22","message":"AuthProvider render start","data":{"windowDefined":false,"isServer":true},"timestamp":1770568195983,"runId":"run1","hypothesisId":"A"}
+{"location":"auth-provider.tsx:26","message":"createClient call in useState","data":{"windowDefined":false},"timestamp":1770568195984,"runId":"run1","hypothesisId":"A"}
+{"location":"auth-provider.tsx:22","message":"AuthProvider render start","data":{"windowDefined":false,"isServer":true},"timestamp":1770568195987,"runId":"run1","hypothesisId":"A"}
+{"location":"auth-provider.tsx:26","message":"createClient call in useState","data":{"windowDefined":false},"timestamp":1770568195990,"runId":"run1","hypothesisId":"A"}
+{"location":"auth-provider.tsx:22","message":"AuthProvider render start","data":{"windowDefined":false,"isServer":true},"timestamp":1770568195981,"runId":"run1","hypothesisId":"A"}
+{"location":"auth-provider.tsx:26","message":"createClient call in useState","data":{"windowDefined":false},"timestamp":1770568195982,"runId":"run1","hypothesisId":"A"}
+{"location":"auth-provider.tsx:22","message":"AuthProvider render start","data":{"windowDefined":false,"isServer":true},"timestamp":1770568195979,"runId":"run1","hypothesisId":"A"}
+{"location":"auth-provider.tsx:26","message":"createClient call in useState","data":{"windowDefined":false},"timestamp":1770568195985,"runId":"run1","hypothesisId":"A"}
+{"location":"auth-provider.tsx:26","message":"createClient call in useState","data":{"windowDefined":false},"timestamp":1770568196001,"runId":"run1","hypothesisId":"A"}
+{"location":"auth-provider.tsx:22","message":"AuthProvider render start","data":{"windowDefined":false,"isServer":true},"timestamp":1770568195987,"runId":"run1","hypothesisId":"A"}
+{"location":"auth-provider.tsx:26","message":"createClient call in useState","data":{"windowDefined":false},"timestamp":1770568195988,"runId":"run1","hypothesisId":"A"}
+{"location":"auth-provider.tsx:22","message":"AuthProvider render start","data":{"windowDefined":false,"isServer":true},"timestamp":1770568195979,"runId":"run1","hypothesisId":"A"}
+{"location":"auth-provider.tsx:26","message":"createClient call in useState","data":{"windowDefined":false},"timestamp":1770568195980,"runId":"run1","hypothesisId":"A"}
+{"location":"auth-provider.tsx:22","message":"AuthProvider render start","data":{"windowDefined":false,"isServer":true},"timestamp":1770568196000,"runId":"run1","hypothesisId":"A"}
+{"location":"auth-provider.tsx:22","message":"AuthProvider render start","data":{"windowDefined":false,"isServer":true},"timestamp":1770568195977,"runId":"run1","hypothesisId":"A"}
+{"location":"auth-provider.tsx:26","message":"createClient call in useState","data":{"windowDefined":false},"timestamp":1770568195978,"runId":"run1","hypothesisId":"A"}
+{"location":"auth-provider.tsx:22","message":"AuthProvider render start","data":{"windowDefined":false,"isServer":true},"timestamp":1770568195974,"runId":"run1","hypothesisId":"A"}
+{"location":"auth-provider.tsx:22","message":"AuthProvider render start","data":{"windowDefined":false,"isServer":true},"timestamp":1770568195987,"runId":"run1","hypothesisId":"A"}
+{"location":"auth-provider.tsx:26","message":"createClient call in useState","data":{"windowDefined":false},"timestamp":1770568195975,"runId":"run1","hypothesisId":"A"}
+{"location":"auth-provider.tsx:26","message":"createClient call in useState","data":{"windowDefined":false},"timestamp":1770568195988,"runId":"run1","hypothesisId":"A"}
+{"location":"auth-provider.tsx:22","message":"AuthProvider render start","data":{"windowDefined":false,"isServer":true},"timestamp":1770568196021,"runId":"run1","hypothesisId":"A"}
+{"location":"auth-provider.tsx:26","message":"createClient call in useState","data":{"windowDefined":false},"timestamp":1770568196008,"runId":"run1","hypothesisId":"A"}
+{"location":"auth-provider.tsx:26","message":"createClient call in useState","data":{"windowDefined":false},"timestamp":1770568196022,"runId":"run1","hypothesisId":"A"}
+{"location":"auth-provider.tsx:22","message":"AuthProvider render start","data":{"windowDefined":false,"isServer":true},"timestamp":1770568196006,"runId":"run1","hypothesisId":"A"}
+{"location":"auth-provider.tsx:22","message":"AuthProvider render start","data":{"windowDefined":false,"isServer":true},"timestamp":1770568196142,"runId":"run1","hypothesisId":"A"}
+{"location":"auth-provider.tsx:26","message":"createClient call in useState","data":{"windowDefined":false},"timestamp":1770568196142,"runId":"run1","hypothesisId":"A"}
+{"location":"auth-provider.tsx:22","message":"AuthProvider render start","data":{"windowDefined":false,"isServer":true},"timestamp":1770568196141,"runId":"run1","hypothesisId":"A"}
+{"location":"auth-provider.tsx:26","message":"createClient call in useState","data":{"windowDefined":false},"timestamp":1770568196141,"runId":"run1","hypothesisId":"A"}
+{"location":"auth-provider.tsx:22","message":"AuthProvider render start","data":{"windowDefined":false,"isServer":true},"timestamp":1770568196144,"runId":"run1","hypothesisId":"A"}
+{"location":"auth-provider.tsx:26","message":"createClient call in useState","data":{"windowDefined":false},"timestamp":1770568196144,"runId":"run1","hypothesisId":"A"}
+{"location":"auth-provider.tsx:26","message":"createClient call in useState","data":{"windowDefined":false},"timestamp":1770568196140,"runId":"run1","hypothesisId":"A"}
+{"location":"auth-provider.tsx:22","message":"AuthProvider render start","data":{"windowDefined":false,"isServer":true},"timestamp":1770568196140,"runId":"run1","hypothesisId":"A"}
+{"location":"auth-provider.tsx:22","message":"AuthProvider render start","data":{"windowDefined":true,"isServer":false},"timestamp":1770568280521,"runId":"run1","hypothesisId":"A"}
+{"location":"auth-provider.tsx:22","message":"AuthProvider render start","data":{"windowDefined":true,"isServer":false},"timestamp":1770568280522,"runId":"run1","hypothesisId":"A"}

@@ -28,9 +28,17 @@ export function useProfile() {
 
     async function loadProfile() {
       try {
+        if (!user?.id) {
+          setProfile(null);
+          setLoading(false);
+          return;
+        }
+
         const { data, error } = await supabase
           .from('profiles')
-          .select('id, email, first_name, last_name, role, avatar_url, chronological_age')
+          .select(
+            'id, email, first_name, last_name, role, avatar_url, chronological_age'
+          )
           .eq('id', user.id)
           .single();
 

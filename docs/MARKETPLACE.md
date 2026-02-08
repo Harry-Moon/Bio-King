@@ -64,6 +64,7 @@ interface ProductTag {
 ### 1. Filtrage par catégorie
 
 Les utilisateurs peuvent filtrer les produits par catégorie :
+
 - Tous
 - Inflammation (Priorité) - Badge orange
 - Métabolisme
@@ -75,6 +76,7 @@ Les utilisateurs peuvent filtrer les produits par catégorie :
 ### 2. Recommandations intelligentes
 
 Le système calcule un score de recommandation pour chaque produit basé sur :
+
 - Les systèmes corporels en retard (ageDifference > 5)
 - Les systèmes en stage "Accelerated"
 - Les tags du produit correspondant aux systèmes de l'utilisateur
@@ -84,6 +86,7 @@ Les produits sont automatiquement triés par score de recommandation.
 ### 3. Protocole utilisateur
 
 La sidebar droite affiche :
+
 - **Couverture Systémique** : Barres de progression pour chaque système
 - **Sélection** : Liste des produits ajoutés avec possibilité de retirer
 - **Total estimé** : Prix total du protocole
@@ -92,12 +95,14 @@ La sidebar droite affiche :
 ### 4. Types de cartes
 
 #### HeroCard
+
 - Grande bannière pour services premium (ex: Session TPE)
 - Badge "ACTION REQUISE" si nécessaire
 - Description détaillée
 - Bouton "Réserver Session"
 
 #### ProductCard
+
 - Petite carte pour suppléments
 - Badge "DELTA" avec valeur (ex: "+10 ANS DELTA")
 - Description courte
@@ -139,6 +144,7 @@ Créer une table `marketplace_products` avec les colonnes correspondantes aux ty
 ## Intégration avec le Dashboard
 
 La Marketplace charge automatiquement :
+
 - Le rapport le plus récent de l'utilisateur (si pas de reportId)
 - Les systèmes corporels pour calculer les recommandations
 - La couverture systémique basée sur les produits sélectionnés

@@ -68,7 +68,7 @@ export function Sidebar() {
   const { profile } = useProfile();
   const [isOpen, setIsOpen] = useState(true);
   const [isHovering, setIsHovering] = useState(false);
-  
+
   // Vérifier le statut admin de manière synchrone avec le profil chargé
   // Le profil se charge maintenant correctement grâce à la migration RLS corrigée
   const userIsAdmin = isAdminSync(user, profile);

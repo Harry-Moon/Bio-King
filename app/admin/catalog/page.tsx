@@ -8,7 +8,11 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { Search, Plus, Loader2 } from 'lucide-react';
-import { getAllProducts, updateProduct, createProduct } from '@/lib/data/admin-products';
+import {
+  getAllProducts,
+  updateProduct,
+  createProduct,
+} from '@/lib/data/admin-products';
 import type { BioProduct, ProductCategory } from '@/lib/types/marketplace';
 
 export default function AdminCatalogPage() {
@@ -101,7 +105,10 @@ export default function AdminCatalogPage() {
     setSelectedProduct(product);
   };
 
-  const handleProductUpdate = async (updatedProduct: BioProduct, skipRefresh = false) => {
+  const handleProductUpdate = async (
+    updatedProduct: BioProduct,
+    skipRefresh = false
+  ) => {
     // Mettre à jour dans la DB
     const result = await updateProduct(updatedProduct.id, updatedProduct);
     if (result) {
@@ -134,7 +141,7 @@ export default function AdminCatalogPage() {
       isActive: false,
       billingModel: 'one-time',
     });
-    
+
     if (newProduct) {
       await refreshProducts();
       setSelectedProduct(newProduct);
@@ -228,7 +235,8 @@ export default function AdminCatalogPage() {
                 handleProductUpdate(updatedProduct);
               }}
               onDuplicate={async () => {
-                const { duplicateProduct } = await import('@/lib/data/admin-products');
+                const { duplicateProduct } =
+                  await import('@/lib/data/admin-products');
                 const duplicated = await duplicateProduct(selectedProduct.id);
                 if (duplicated) {
                   await refreshProducts();
