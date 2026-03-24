@@ -1,88 +1,137 @@
 'use client';
 
+import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
+import Image from 'next/image';
 import {
   LayoutDashboard,
   Database,
-  FileText,
-  Trophy,
-  Award,
   User,
   Settings,
-  Upload,
-  Stethoscope,
+  PanelLeftOpen,
+  PanelLeftClose,
+  Store,
+  ShieldCheck,
+  BookOpen,
+  MessageCircle,
 } from 'lucide-react';
 import { UserMenu } from '@/components/auth/user-menu';
-import { LanguageSelector } from '@/components/ui/language-selector';
+import { useAuth } from '@/components/auth/auth-provider';
+import { useProfile } from '@/components/auth/use-profile';
+import { isAdminSync } from '@/lib/utils/admin';
 
 const navItems = [
   {
-    label: 'Tableau de bord',
+    label: 'Dashboard',
     href: '/dashboard',
     icon: LayoutDashboard,
   },
   {
-    label: 'Upload Rapport',
-    href: '/upload',
-    icon: Upload,
+    label: 'Coach',
+    href: '/coach',
+    icon: MessageCircle,
   },
   {
-    label: 'Données',
+    label: 'Marketplace',
+    href: '/marketplace',
+    icon: Store,
+  },
+  {
+    label: 'Learn',
+    href: '/learn',
+    icon: BookOpen,
+  },
+  {
+    label: 'Biomarkers',
     href: '/data',
     icon: Database,
   },
   {
-    label: 'Rapports',
-    href: '/reports',
-    icon: FileText,
-  },
-  {
-    label: 'Défis',
-    href: '/challenges',
-    icon: Trophy,
-  },
-  {
-    label: 'Badges',
-    href: '/badges',
-    icon: Award,
-  },
-  {
-    label: 'Profil',
+    label: 'Profile',
     href: '/profile',
     icon: User,
   },
   {
-    label: 'Paramètres',
+    label: 'Settings',
     href: '/settings',
     icon: Settings,
-  },
-  {
-    label: '🔧 Diagnostic',
-    href: '/diagnostic',
-    icon: Stethoscope,
-  },
-  {
-    label: '🧪 Test OpenAI',
-    href: '/test-openai',
-    icon: Stethoscope,
   },
 ];
 
 export function Sidebar() {
   const pathname = usePathname();
+  const { user } = useAuth();
+  const { profile } = useProfile();
+  const [isOpen, setIsOpen] = useState(true);
+  const [isHovering, setIsHovering] = useState(false);
+
+  // Vérifier le statut admin de manière synchrone avec le profil chargé
+  // Le profil se charge maintenant correctement grâce à la migration RLS corrigée
+  const userIsAdmin = isAdminSync(user, profile);
 
   return (
-    <aside className="hidden h-screen w-64 border-r bg-white md:block">
+    <aside
+      className={cn(
+        'hidden h-screen border-r border-border bg-card transition-all duration-300 md:block',
+        isOpen ? 'w-64' : 'w-16'
+      )}
+    >
       <div className="flex h-full flex-col">
         {/* Logo / Titre */}
-        <div className="border-b p-6">
-          <h1 className="text-2xl font-bold text-primary">BioKing</h1>
+        <div
+          className="border-b border-border/50 p-4"
+          onMouseEnter={() => setIsHovering(true)}
+          onMouseLeave={() => setIsHovering(false)}
+        >
+          <div className="flex items-center gap-2">
+            {/* Icon Container */}
+            <button
+              onClick={() => setIsOpen(!isOpen)}
+              className="relative flex h-6 w-6 flex-shrink-0 items-center justify-center transition-opacity"
+              title={isOpen ? 'Collapse sidebar' : 'Expand sidebar'}
+            >
+              {/* Logo - priorité visuelle, masqué au survol pour laisser place à l’action */}
+              <span
+                className={cn(
+                  'relative z-0 flex h-6 w-6 items-center justify-center transition-opacity duration-200',
+                  isHovering ? 'opacity-0' : 'opacity-100'
+                )}
+                aria-hidden
+              >
+                <Image
+                  src="/logo/logo.svg"
+                  alt="BioKing"
+                  width={24}
+                  height={24}
+                  unoptimized
+                  className="h-6 w-6 object-contain"
+                />
+              </span>
+
+              {/* Icône expand/collapse - uniquement au survol, derrière le logo en z-index */}
+              {isHovering && (
+                <span className="absolute inset-0 z-10 flex items-center justify-center">
+                  {isOpen ? (
+                    <PanelLeftClose className="h-6 w-6 text-green-500 animate-in fade-in duration-200" />
+                  ) : (
+                    <PanelLeftOpen className="h-6 w-6 text-green-500 animate-in fade-in duration-200" />
+                  )}
+                </span>
+              )}
+            </button>
+
+            {isOpen && (
+              <h1 className="whitespace-nowrap text-xl font-bold text-green-500">
+                BioKing
+              </h1>
+            )}
+          </div>
         </div>
 
         {/* Navigation */}
-        <nav className="flex-1 space-y-1 p-4">
+        <nav className={cn('flex-1 space-y-1', isOpen ? 'p-3' : 'p-2')}>
           {navItems.map((item) => {
             const Icon = item.icon;
             const isActive = pathname === item.href;
@@ -92,27 +141,42 @@ export function Sidebar() {
                 key={item.href}
                 href={item.href}
                 className={cn(
-                  'flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors',
+                  'flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all',
                   isActive
-                    ? 'bg-primary text-primary-foreground'
-                    : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
+                    ? 'bg-green-500/15 text-green-600 dark:text-green-400'
+                    : 'text-muted-foreground hover:bg-accent/50'
                 )}
+                title={!isOpen ? item.label : undefined}
               >
-                <Icon className="h-5 w-5" />
-                {item.label}
+                <Icon className="h-5 w-5 flex-shrink-0" />
+                {isOpen && <span>{item.label}</span>}
               </Link>
             );
           })}
         </nav>
 
-        {/* Language Selector */}
-        <div className="border-t p-4">
-          <LanguageSelector />
-        </div>
+        {/* Admin Link */}
+        {userIsAdmin && (
+          <div className="border-t border-border/50 p-3">
+            <Link
+              href="/admin/catalog"
+              className={cn(
+                'flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all',
+                pathname.startsWith('/admin')
+                  ? 'bg-green-500/15 text-green-600 dark:text-green-400'
+                  : 'text-muted-foreground hover:bg-accent/50'
+              )}
+              title={!isOpen ? 'Admin' : undefined}
+            >
+              <ShieldCheck className="h-5 w-5 flex-shrink-0" />
+              {isOpen && <span>Admin</span>}
+            </Link>
+          </div>
+        )}
 
         {/* User Menu */}
-        <div className="border-t p-4">
-          <UserMenu />
+        <div className="border-t border-border/50 p-3">
+          <UserMenu isCollapsed={!isOpen} />
         </div>
       </div>
     </aside>

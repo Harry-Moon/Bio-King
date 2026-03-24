@@ -1,5 +1,6 @@
 'use client';
 
+import React from 'react';
 import {
   BarChart,
   Bar,
@@ -23,10 +24,10 @@ interface SystemComparisonChartProps {
 }
 
 const categoryColors: Record<Category, string> = {
-  need_attention: '#F97316', // orange
-  normal: '#FACC15', // yellow
-  good: '#65A30D', // green
-  excellent: '#60A5FA', // blue
+  excellent: '#39C5EB', // Blue
+  good: '#B7EBB4', // Green
+  normal: '#F9CD71', // Yellow
+  need_attention: '#D64219', // Red/Orange
 };
 
 // Removed - using translations instead
@@ -51,14 +52,38 @@ export function SystemComparisonChart({
     excellent: t('dashboard.excellent'),
   };
 
-  const chartData = [...systems]
-    .sort((a, b) => b.systemAge - a.systemAge)
-    .map((system) => ({
-      name: t(`systems.${system.systemName}`) || system.systemName,
-      systemAge: Number(system.systemAge.toFixed(1)),
-      ageDiff: system.ageDifference,
-      category: getCategory(system.ageDifference),
-    }));
+  // Séparer: Attention+Normal au-dessus, Bon+Excellent en-dessous
+  const systemsAbove = [...systems]
+    .filter((s) => {
+      const cat = getCategory(s.ageDifference);
+      return cat === 'need_attention' || cat === 'normal';
+    })
+    .sort((a, b) => b.systemAge - a.systemAge);
+
+  const systemsBelow = [...systems]
+    .filter((s) => {
+      const cat = getCategory(s.ageDifference);
+      return cat === 'good' || cat === 'excellent';
+    })
+    .sort((a, b) => a.systemAge - b.systemAge);
+
+  const chartData = [...systemsAbove, ...systemsBelow].map((system) => ({
+    name: t(`systems.${system.systemName}`) || system.systemName,
+    systemAge: Number(system.systemAge.toFixed(1)),
+    ageDiff: system.ageDifference,
+    category: getCategory(system.ageDifference),
+  }));
+
+  const [isMobile, setIsMobile] = React.useState(false);
+  const [mounted, setMounted] = React.useState(false);
+
+  React.useEffect(() => {
+    setMounted(true);
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   return (
     <div className="rounded-xl border bg-card p-6 shadow-sm">
@@ -79,48 +104,57 @@ export function SystemComparisonChart({
         </div>
       </div>
 
-      <div className="h-[380px] w-full">
-        <ResponsiveContainer width="100%" height="100%">
+      <div className="h-[600px] w-full min-h-[400px]">
+        <ResponsiveContainer width="100%" height="100%" minHeight={400}>
           <BarChart
             data={chartData}
-            margin={{ top: 30, right: 20, left: 0, bottom: 100 }}
+            margin={{ top: 40, right: 20, left: 0, bottom: 160 }}
           >
             <CartesianGrid
               strokeDasharray="3 3"
               vertical={false}
-              stroke="#e2e8f0"
+              stroke="hsl(var(--border))"
             />
             <XAxis
               dataKey="name"
               interval={0}
-              angle={-45}
-              textAnchor="end"
-              height={100}
-              tick={{ fontSize: 11, fill: '#64748b' }}
+              angle={mounted && isMobile ? 0 : -60}
+              textAnchor={mounted && isMobile ? 'middle' : 'end'}
+              height={mounted && isMobile ? 0 : 130}
+              tick={
+                mounted && isMobile
+                  ? false
+                  : {
+                      fontSize: 10,
+                      fill: 'hsl(var(--muted-foreground))',
+                    }
+              }
             />
-            <YAxis tick={{ fontSize: 12, fill: '#64748b' }} />
+            <YAxis
+              tick={{ fontSize: 12, fill: 'hsl(var(--muted-foreground))' }}
+            />
             <Tooltip
               formatter={(value: any) => [
                 `${typeof value === 'number' ? value : 0} ${t('common.years')}`,
                 'SystemAge',
               ]}
               contentStyle={{
-                backgroundColor: 'white',
-                border: '1px solid #e2e8f0',
+                backgroundColor: 'hsl(var(--card))',
+                border: '1px solid hsl(var(--border))',
                 borderRadius: '8px',
+                color: 'hsl(var(--foreground))',
               }}
             />
             <ReferenceLine
               y={chronologicalAge}
-              stroke="#64748B"
-              strokeDasharray="4 4"
-              strokeWidth={2}
+              stroke="hsl(var(--primary))"
+              strokeWidth={3}
               label={{
                 value: `${chronologicalAge.toFixed(1)} ${t('common.years')}`,
                 position: 'left',
-                fill: '#64748B',
-                fontSize: 12,
-                fontWeight: 600,
+                fill: 'hsl(var(--primary))',
+                fontSize: 13,
+                fontWeight: 700,
               }}
             />
             <Bar dataKey="systemAge" radius={[4, 4, 0, 0]} maxBarSize={60}>
@@ -130,17 +164,19 @@ export function SystemComparisonChart({
                   fill={categoryColors[entry.category as Category]}
                 />
               ))}
-              <LabelList
-                dataKey="systemAge"
-                position="top"
-                formatter={(value: any) =>
-                  typeof value === 'number' ? value.toFixed(1) : '0'
-                }
-                fill="#1e293b"
-                fontSize={11}
-                fontWeight={600}
-                offset={8}
-              />
+              {mounted && !isMobile && (
+                <LabelList
+                  dataKey="systemAge"
+                  position="top"
+                  formatter={(value: any) =>
+                    typeof value === 'number' ? value.toFixed(1) : '0'
+                  }
+                  fill="hsl(var(--foreground))"
+                  fontSize={11}
+                  fontWeight={600}
+                  offset={12}
+                />
+              )}
             </Bar>
           </BarChart>
         </ResponsiveContainer>

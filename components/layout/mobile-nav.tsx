@@ -6,10 +6,10 @@ import { cn } from '@/lib/utils';
 import {
   LayoutDashboard,
   Database,
-  FileText,
-  Trophy,
   User,
-  Upload,
+  Store,
+  BookOpen,
+  MessageCircle,
 } from 'lucide-react';
 
 const navItems = [
@@ -19,19 +19,24 @@ const navItems = [
     icon: LayoutDashboard,
   },
   {
-    label: 'Upload',
-    href: '/upload',
-    icon: Upload,
+    label: 'Coach',
+    href: '/coach',
+    icon: MessageCircle,
   },
   {
-    label: 'Rapports',
-    href: '/reports',
-    icon: FileText,
+    label: 'Marketplace',
+    href: '/marketplace',
+    icon: Store,
   },
   {
-    label: 'Défis',
-    href: '/challenges',
-    icon: Trophy,
+    label: 'Learn',
+    href: '/learn',
+    icon: BookOpen,
+  },
+  {
+    label: 'Biomarkers',
+    href: '/data',
+    icon: Database,
   },
   {
     label: 'Profil',
@@ -44,7 +49,7 @@ export function MobileNav() {
   const pathname = usePathname();
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 border-t bg-white md:hidden">
+    <nav className="fixed bottom-0 left-0 right-0 z-50 border-t border-border bg-card md:hidden">
       <div className="flex items-center justify-around">
         {navItems.map((item) => {
           const Icon = item.icon;

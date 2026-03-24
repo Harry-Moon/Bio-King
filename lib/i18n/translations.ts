@@ -83,6 +83,52 @@ export const translations = {
       accelerated: 'Accelerated',
     },
 
+    // Learn - themes (tags), content types, levels
+    learn: {
+      themes: {
+        energy: 'Energy',
+        longevity: 'Longevity',
+        inflammation: 'Inflammation',
+        nutrition: 'Nutrition',
+        sleep: 'Sleep',
+        brain: 'Brain',
+        metabolism: 'Metabolism',
+        epigenetics: 'Epigenetics',
+        tech: 'Tech',
+        hormesis: 'Hormesis',
+        recovery: 'Recovery',
+      },
+      contentType: {
+        article: 'Article',
+        protocol: 'Official Protocol',
+        clinical_study: 'Clinical Study',
+      },
+      level: {
+        beginner: 'Beginner',
+        intermediate: 'Intermediate',
+        advanced: 'Advanced',
+      },
+      sort: {
+        relevance: 'Relevance',
+        recent: 'Most recent',
+        reading_time: 'Reading time',
+        popularity: 'Popularity',
+      },
+      searchPlaceholder: 'Search protocols, studies, molecules...',
+      searchPlaceholderShort: 'Search...',
+      subtitle:
+        'Discover protocols, clinical studies and articles by theme and level.',
+      noArticles: 'No articles found. Articles will be available soon.',
+      useAdmin: 'Use the admin platform to create articles.',
+      themesLabel: 'Themes',
+      filtersLabel: 'Filters',
+      levelLabel: 'Level',
+      all: 'All',
+      backToArticles: 'Back to articles',
+      minRead: 'min read',
+      articleNotFound: 'Article not found.',
+    },
+
     // Systems (body systems names)
     systems: {
       'Auditory System': 'Auditory System',
@@ -183,6 +229,53 @@ export const translations = {
       prime: 'Prime',
       plateau: 'Plateau',
       accelerated: 'Accéléré',
+    },
+
+    // Learn - thèmes, types de contenu, niveaux
+    learn: {
+      themes: {
+        energy: 'Energie',
+        longevity: 'Longévité',
+        inflammation: 'Inflammation',
+        nutrition: 'Nutrition',
+        sleep: 'Sommeil',
+        brain: 'Cerveau',
+        metabolism: 'Metabolisme',
+        epigenetics: 'Epigénétique',
+        tech: 'Tech',
+        hormesis: 'Hormèse',
+        recovery: 'Récupération',
+      },
+      contentType: {
+        article: 'Article',
+        protocol: 'Protocole officiel',
+        clinical_study: 'Étude clinique',
+      },
+      level: {
+        beginner: 'Débutant',
+        intermediate: 'Intermédiaire',
+        advanced: 'Avancé',
+      },
+      sort: {
+        relevance: 'Pertinence',
+        recent: 'Plus récents',
+        reading_time: 'Temps de lecture',
+        popularity: 'Popularité',
+      },
+      searchPlaceholder: 'Rechercher des protocoles, études, molécules...',
+      searchPlaceholderShort: 'Rechercher...',
+      subtitle:
+        'Découvrez des protocoles, études cliniques et articles par thématiques et niveau.',
+      noArticles:
+        'Aucun article trouvé. Les articles seront bientôt disponibles.',
+      useAdmin: 'Utilisez la plateforme admin pour créer des articles.',
+      themesLabel: 'Thématiques',
+      filtersLabel: 'Filtres',
+      levelLabel: 'Niveau',
+      all: 'Tout',
+      backToArticles: 'Retour aux articles',
+      minRead: 'min de lecture',
+      articleNotFound: 'Article non trouvé.',
     },
 
     // Systems (body systems names in French)
