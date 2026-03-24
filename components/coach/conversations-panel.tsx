@@ -1,7 +1,14 @@
 'use client';
 
 import { useEffect, useState, useCallback } from 'react';
-import { MessageSquare, Plus, Trash2, Loader2, PanelLeftClose, PanelLeftOpen } from 'lucide-react';
+import {
+  MessageSquare,
+  Plus,
+  Trash2,
+  Loader2,
+  PanelLeftClose,
+  PanelLeftOpen,
+} from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { formatDistanceToNow } from 'date-fns';
 import { fr } from 'date-fns/locale';
@@ -82,7 +89,7 @@ export function ConversationsPanel({
         <button
           type="button"
           onClick={() => setOpen((v) => !v)}
-          aria-label={open ? 'Réduire l\'historique' : 'Afficher l\'historique'}
+          aria-label={open ? "Réduire l'historique" : "Afficher l'historique"}
           title={open ? 'Réduire' : 'Historique'}
           className="rounded-lg p-1.5 text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
         >

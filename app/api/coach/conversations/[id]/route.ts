@@ -33,9 +33,13 @@ export async function GET(
 
     return NextResponse.json({ messages: messages ?? [] });
   } catch (error) {
-    if (error instanceof Error && error.message?.includes('redirect')) throw error;
+    if (error instanceof Error && error.message?.includes('redirect'))
+      throw error;
     console.error('[Coach conversations] GET [id] error:', error);
-    return NextResponse.json({ error: 'Failed to fetch messages' }, { status: 500 });
+    return NextResponse.json(
+      { error: 'Failed to fetch messages' },
+      { status: 500 }
+    );
   }
 }
 
@@ -58,8 +62,12 @@ export async function DELETE(
 
     return NextResponse.json({ success: true });
   } catch (error) {
-    if (error instanceof Error && error.message?.includes('redirect')) throw error;
+    if (error instanceof Error && error.message?.includes('redirect'))
+      throw error;
     console.error('[Coach conversations] DELETE error:', error);
-    return NextResponse.json({ error: 'Failed to delete conversation' }, { status: 500 });
+    return NextResponse.json(
+      { error: 'Failed to delete conversation' },
+      { status: 500 }
+    );
   }
 }

@@ -196,7 +196,8 @@ ${ecosystemContext}${userContextBlock}`;
     let conversationId = incomingConversationId ?? null;
 
     if (!conversationId) {
-      const title = message.trim().slice(0, 60) + (message.trim().length > 60 ? '…' : '');
+      const title =
+        message.trim().slice(0, 60) + (message.trim().length > 60 ? '…' : '');
       const { data: newConv } = await supabaseAdmin
         .from('chat_conversations')
         .insert({ user_id: user.id, title })
@@ -215,7 +216,11 @@ ${ecosystemContext}${userContextBlock}`;
     if (conversationId) {
       await supabaseAdmin.from('chat_messages').insert([
         { conversation_id: conversationId, role: 'user', content: message },
-        { conversation_id: conversationId, role: 'assistant', content: assistantMessage },
+        {
+          conversation_id: conversationId,
+          role: 'assistant',
+          content: assistantMessage,
+        },
       ]);
     }
 
