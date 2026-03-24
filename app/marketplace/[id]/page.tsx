@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
+import Image from 'next/image';
 
 /**
  * Page de détail d'un produit
@@ -110,10 +111,12 @@ export default function ProductDetailPage() {
 
         {/* Image */}
         <div className="relative h-96 w-full overflow-hidden bg-muted">
-          <img
+          <Image
             src={product.image}
             alt={product.name}
-            className="h-full w-full object-cover"
+            fill
+            className="object-cover"
+            sizes="(max-width: 768px) 100vw, 50vw"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
         </div>

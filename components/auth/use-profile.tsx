@@ -12,6 +12,7 @@ interface Profile {
   role: 'user' | 'admin' | 'moderator';
   avatar_url: string | null;
   chronological_age: number | null;
+  created_at?: string | null;
 }
 
 export function useProfile() {
@@ -37,7 +38,7 @@ export function useProfile() {
         const { data, error } = await supabase
           .from('profiles')
           .select(
-            'id, email, first_name, last_name, role, avatar_url, chronological_age'
+            'id, email, first_name, last_name, role, avatar_url, chronological_age, created_at'
           )
           .eq('id', user.id)
           .single();

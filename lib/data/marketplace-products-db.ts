@@ -82,6 +82,9 @@ export async function getProductById(id: string): Promise<BioProduct | null> {
 export async function createProduct(
   product: Omit<BioProduct, 'id' | 'createdAt' | 'updatedAt'>
 ): Promise<BioProduct | null> {
+  // Validation: s'assurer que la description n'est pas vide (contrainte DB)
+  const description = product.description?.trim() || 'Description à compléter';
+
   const { data, error } = await supabase
     .from('marketplace_products')
     .insert({
@@ -90,7 +93,7 @@ export async function createProduct(
       type: product.type,
       price: product.price,
       currency: product.currency || 'EUR',
-      description: product.description,
+      description: description,
       detailed_description: product.detailedDescription,
       image: product.image,
       is_hero: product.isHero || false,
@@ -130,8 +133,11 @@ export async function updateProduct(
   if (updates.type !== undefined) updateData.type = updates.type;
   if (updates.price !== undefined) updateData.price = updates.price;
   if (updates.currency !== undefined) updateData.currency = updates.currency;
-  if (updates.description !== undefined)
-    updateData.description = updates.description;
+  if (updates.description !== undefined) {
+    // Validation: s'assurer que la description n'est pas vide (contrainte DB)
+    const description = updates.description.trim() || 'Description à compléter';
+    updateData.description = description;
+  }
   if (updates.detailedDescription !== undefined)
     updateData.detailed_description = updates.detailedDescription;
   if (updates.image !== undefined) updateData.image = updates.image;

@@ -22,6 +22,7 @@ VALUES (
 ON CONFLICT (id) DO NOTHING;
 
 -- Politique: Lecture publique (tout le monde peut voir les avatars)
+DROP POLICY IF EXISTS "Public avatar access" ON storage.objects;
 CREATE POLICY "Public avatar access"
 ON storage.objects FOR SELECT
 USING (bucket_id = 'user-avatars');
@@ -29,6 +30,7 @@ USING (bucket_id = 'user-avatars');
 -- Politique: Écriture uniquement par le propriétaire
 -- Le chemin doit être au format: {user_id}/avatar.{ext}
 -- Utilise split_part pour extraire le premier segment du chemin (user_id)
+DROP POLICY IF EXISTS "Users can upload their own avatar" ON storage.objects;
 CREATE POLICY "Users can upload their own avatar"
 ON storage.objects FOR INSERT
 WITH CHECK (
@@ -37,6 +39,7 @@ WITH CHECK (
 );
 
 -- Politique: Mise à jour uniquement par le propriétaire
+DROP POLICY IF EXISTS "Users can update their own avatar" ON storage.objects;
 CREATE POLICY "Users can update their own avatar"
 ON storage.objects FOR UPDATE
 USING (
@@ -49,6 +52,7 @@ WITH CHECK (
 );
 
 -- Politique: Suppression uniquement par le propriétaire
+DROP POLICY IF EXISTS "Users can delete their own avatar" ON storage.objects;
 CREATE POLICY "Users can delete their own avatar"
 ON storage.objects FOR DELETE
 USING (
@@ -79,11 +83,13 @@ ON CONFLICT (id) DO NOTHING;
 -- Note: On utilise la fonction is_user_admin créée dans la migration 014
 
 -- Politique: Lecture publique (tout le monde peut voir les images produits)
+DROP POLICY IF EXISTS "Public product cover access" ON storage.objects;
 CREATE POLICY "Public product cover access"
 ON storage.objects FOR SELECT
 USING (bucket_id = 'product-covers');
 
 -- Politique: Écriture uniquement par les admins
+DROP POLICY IF EXISTS "Admins can upload product covers" ON storage.objects;
 CREATE POLICY "Admins can upload product covers"
 ON storage.objects FOR INSERT
 WITH CHECK (
@@ -92,6 +98,7 @@ WITH CHECK (
 );
 
 -- Politique: Mise à jour uniquement par les admins
+DROP POLICY IF EXISTS "Admins can update product covers" ON storage.objects;
 CREATE POLICY "Admins can update product covers"
 ON storage.objects FOR UPDATE
 USING (
@@ -104,6 +111,7 @@ WITH CHECK (
 );
 
 -- Politique: Suppression uniquement par les admins
+DROP POLICY IF EXISTS "Admins can delete product covers" ON storage.objects;
 CREATE POLICY "Admins can delete product covers"
 ON storage.objects FOR DELETE
 USING (

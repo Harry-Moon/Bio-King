@@ -1,20 +1,13 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Select } from '@/components/ui/select';
-import { Switch } from '@/components/ui/switch';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
-import { HeroCard } from '@/components/marketplace/hero-card';
-import { ProductCard } from '@/components/marketplace/product-card';
+import { ItemBuilderPreview } from '@/components/admin/item-builder-preview';
+import { ItemBuilderImageUpload } from '@/components/admin/item-builder-image-upload';
 import { Check, Eye, Copy, Archive, Link as LinkIcon } from 'lucide-react';
 import type {
   BioProduct,
@@ -44,16 +37,8 @@ export function ItemBuilder({
   const [clinicalRefs, setClinicalRefs] = useState<string>(
     product.clinicalReferences?.join('\n') || ''
   );
-  const [uploadingImage, setUploadingImage] = useState(false);
-
-  // Mettre à jour le formData quand le produit change
-  // Utiliser une ref pour éviter les mises à jour pendant l'upload
-  const isUploadingRef = useRef(false);
 
   useEffect(() => {
-    // Ne pas mettre à jour si on est en train d'uploader
-    if (isUploadingRef.current) return;
-
     setFormData(product);
     setClinicalRefs(product.clinicalReferences?.join('\n') || '');
   }, [product]);
@@ -137,100 +122,11 @@ export function ItemBuilder({
               <label className="mb-2 block text-sm font-medium">
                 Cover Image
               </label>
-              <div className="space-y-2">
-                {/* Option URL */}
-                <div>
-                  <label className="mb-1 block text-xs text-muted-foreground">
-                    Image URL
-                  </label>
-                  <Input
-                    type="url"
-                    value={formData.image || ''}
-                    onChange={(e) => handleFieldChange('image', e.target.value)}
-                    placeholder="https://example.com/image.jpg"
-                  />
-                </div>
-                {/* Option Upload */}
-                <div>
-                  <label className="mb-1 block text-xs text-muted-foreground">
-                    Or upload an image
-                  </label>
-                  <Input
-                    type="file"
-                    accept="image/jpeg,image/png,image/webp"
-                    disabled={uploadingImage}
-                    onChange={async (e) => {
-                      const file = e.target.files?.[0];
-                      if (!file) return;
-
-                      setUploadingImage(true);
-                      isUploadingRef.current = true;
-                      try {
-                        // Upload vers Supabase Storage via l'API
-                        const formData = new FormData();
-                        formData.append('file', file);
-
-                        const response = await fetch(
-                          `/api/admin/products/${product.id}/cover`,
-                          {
-                            method: 'POST',
-                            body: formData,
-                          }
-                        );
-
-                        if (!response.ok) {
-                          const error = await response.json();
-                          throw new Error(error.error || 'Upload failed');
-                        }
-
-                        const data = await response.json();
-
-                        // Mettre à jour le formData avec l'URL de l'image uploadée
-                        // L'API a déjà mis à jour le produit dans la DB, donc on met juste à jour l'état local
-                        // Ne pas déclencher de mise à jour du produit parent pour éviter la réouverture de la popin
-                        setFormData((prev) => ({
-                          ...prev,
-                          image: data.coverUrl,
-                        }));
-                      } catch (error) {
-                        console.error('Error uploading image:', error);
-                        alert(
-                          error instanceof Error
-                            ? error.message
-                            : 'Failed to upload image'
-                        );
-                      } finally {
-                        setUploadingImage(false);
-                        // Réinitialiser l'input pour permettre de re-uploader le même fichier
-                        e.target.value = '';
-                        // Réactiver les mises à jour après un court délai
-                        setTimeout(() => {
-                          isUploadingRef.current = false;
-                        }, 100);
-                      }
-                    }}
-                    className="cursor-pointer"
-                  />
-                  {uploadingImage && (
-                    <p className="mt-1 text-xs text-muted-foreground">
-                      Uploading...
-                    </p>
-                  )}
-                </div>
-                {/* Preview */}
-                {formData.image && (
-                  <div className="mt-2 rounded-lg border border-border overflow-hidden">
-                    <img
-                      src={formData.image}
-                      alt="Preview"
-                      className="w-full h-32 object-cover"
-                      onError={(e) => {
-                        (e.target as HTMLImageElement).style.display = 'none';
-                      }}
-                    />
-                  </div>
-                )}
-              </div>
+              <ItemBuilderImageUpload
+                productId={product.id}
+                imageUrl={formData.image || ''}
+                onImageChange={(url) => handleFieldChange('image', url)}
+              />
             </div>
             <div>
               <label className="mb-2 block text-sm font-medium">Type</label>
@@ -451,35 +347,14 @@ export function ItemBuilder({
         </div>
       </div>
 
-      {/* Preview Dialog */}
-      <Dialog open={showPreview} onOpenChange={setShowPreview}>
-        <DialogContent className="max-w-4xl">
-          <DialogHeader>
-            <DialogTitle>Product Preview</DialogTitle>
-          </DialogHeader>
-          <div className="mt-4">
-            {(() => {
-              const previewProduct: BioProduct = {
-                ...product,
-                ...formData,
-                clinicalReferences: clinicalRefs
-                  .split('\n')
-                  .filter((ref) => ref.trim())
-                  .map((ref) => ref.trim()),
-                isHero: displayType === 'hero',
-                displayType: displayType as DisplayType,
-              };
-              return displayType === 'hero' ? (
-                <HeroCard product={previewProduct} onReserve={() => {}} />
-              ) : (
-                <div className="max-w-sm">
-                  <ProductCard product={previewProduct} onAdd={() => {}} />
-                </div>
-              );
-            })()}
-          </div>
-        </DialogContent>
-      </Dialog>
+      <ItemBuilderPreview
+        open={showPreview}
+        onOpenChange={setShowPreview}
+        product={product}
+        formData={formData}
+        clinicalRefs={clinicalRefs}
+        displayType={displayType}
+      />
     </div>
   );
 }

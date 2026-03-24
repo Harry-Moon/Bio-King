@@ -1,10 +1,19 @@
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
+import dynamic from 'next/dynamic';
 import { CatalogTable } from '@/components/admin/catalog-table';
 import { CatalogFilters } from '@/components/admin/catalog-filters';
-import { ItemBuilder } from '@/components/admin/item-builder';
 import { Button } from '@/components/ui/button';
+
+const ItemBuilder = dynamic(
+  () =>
+    import('@/components/admin/item-builder').then((mod) => mod.ItemBuilder),
+  {
+    loading: () => <div className="h-96 animate-pulse rounded-xl bg-muted" />,
+    ssr: false,
+  }
+);
 import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { Search, Plus, Loader2 } from 'lucide-react';
@@ -132,7 +141,7 @@ export default function AdminCatalogPage() {
       type: 'supplement',
       price: 0,
       currency: 'EUR',
-      description: '',
+      description: 'Description à compléter',
       image:
         'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400&h=400&fit=crop',
       isHero: false,

@@ -1,6 +1,7 @@
 'use client';
 
 import { X, Download, CheckCircle2, Calendar } from 'lucide-react';
+import Image from 'next/image';
 import type { UserProtocol, ProtocolItem } from '@/lib/types/marketplace';
 import { cn } from '@/lib/utils';
 
@@ -100,9 +101,11 @@ export function ProtocolSidebar({
                 className="flex items-start gap-3 rounded-lg border border-border/50 bg-card/50 p-3"
               >
                 {/* Image miniature */}
-                <img
+                <Image
                   src={item.product.image}
                   alt={item.product.name}
+                  width={48}
+                  height={48}
                   className="h-12 w-12 flex-shrink-0 rounded object-cover"
                 />
 

@@ -1,10 +1,52 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import { useTheme } from '@/lib/theme/theme-context';
 import { useLanguage } from '@/lib/i18n/language-context';
-import { Moon, Sun, Monitor, Globe } from 'lucide-react';
+import {
+  Moon,
+  Sun,
+  Monitor,
+  Globe,
+  KeyRound,
+  Loader2,
+  Check,
+} from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 
 export default function SettingsPage() {
+  const [openaiKey, setOpenaiKey] = useState('');
+  const [hasApiKey, setHasApiKey] = useState<boolean | null>(null);
+  const [savingKey, setSavingKey] = useState(false);
+  const [keySaved, setKeySaved] = useState(false);
+
+  useEffect(() => {
+    fetch('/api/user/openai-key')
+      .then((r) => r.json())
+      .then((d) => setHasApiKey(d.hasApiKey ?? false))
+      .catch(() => setHasApiKey(false));
+  }, []);
+
+  const saveOpenaiKey = async (keyToSave: string) => {
+    setSavingKey(true);
+    setKeySaved(false);
+    try {
+      const res = await fetch('/api/user/openai-key', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ openaiApiKey: keyToSave }),
+      });
+      if (!res.ok) throw new Error('Failed');
+      setHasApiKey(Boolean(keyToSave.trim()));
+      setOpenaiKey('');
+      setKeySaved(true);
+    } catch {
+      setKeySaved(false);
+    } finally {
+      setSavingKey(false);
+    }
+  };
   const { theme, setTheme } = useTheme();
   const { language, setLanguage } = useLanguage();
 
@@ -31,6 +73,63 @@ export default function SettingsPage() {
     <div>
       <h1 className="mb-6 text-3xl font-bold">Settings</h1>
       <div className="space-y-6">
+        {/* Coach - OpenAI API Key */}
+        <div className="rounded-lg border bg-card p-6 shadow-sm">
+          <h2 className="mb-4 flex items-center gap-2 text-xl font-semibold">
+            <KeyRound className="h-5 w-5" />
+            Coach IA
+          </h2>
+          <p className="mb-4 text-sm text-muted-foreground">
+            Le Coach utilise votre clé API OpenAI pour converser. Vos données
+            restent privées et la clé n&apos;est jamais partagée.
+          </p>
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
+            <div className="flex-1">
+              <Input
+                type="password"
+                placeholder={
+                  hasApiKey === true
+                    ? 'Clé configurée • Entrez une nouvelle pour remplacer'
+                    : 'sk-... (votre clé OpenAI)'
+                }
+                value={openaiKey}
+                onChange={(e) => setOpenaiKey(e.target.value)}
+                className="font-mono text-sm"
+              />
+            </div>
+            <div className="flex gap-2">
+              <Button
+                onClick={() => saveOpenaiKey(openaiKey)}
+                disabled={savingKey || !openaiKey.trim()}
+                className="sm:w-auto"
+              >
+                {savingKey ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : keySaved ? (
+                  <Check className="h-4 w-4 text-green-500" />
+                ) : (
+                  'Enregistrer'
+                )}
+              </Button>
+              {hasApiKey === true && (
+                <Button
+                  variant="outline"
+                  onClick={() => saveOpenaiKey('')}
+                  disabled={savingKey}
+                  className="sm:w-auto"
+                >
+                  Supprimer
+                </Button>
+              )}
+            </div>
+          </div>
+          {hasApiKey === true && (
+            <p className="mt-2 text-xs text-muted-foreground">
+              Clé configurée. Laissez vide pour conserver l&apos;actuelle.
+            </p>
+          )}
+        </div>
+
         <div className="rounded-lg border bg-card p-6 shadow-sm">
           <h2 className="mb-4 text-xl font-semibold">General Preferences</h2>
           <div className="space-y-6">

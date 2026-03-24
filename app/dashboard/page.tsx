@@ -1,16 +1,48 @@
 'use client';
 
 import { Suspense, useEffect, useState } from 'react';
+import dynamic from 'next/dynamic';
 import { useSearchParams } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/components/auth/auth-provider';
 import { SystemGauge } from '@/components/dashboard/system-gauge';
 import { SystemCard } from '@/components/dashboard/system-card';
-import { SystemComparisonChart } from '@/components/dashboard/system-comparison-chart';
-import { EntropyCurve } from '@/components/dashboard/entropy-curve';
-import { RecommendationCard } from '@/components/dashboard/recommendation-card';
-import { LastUploadInfo } from '@/components/dashboard/last-upload-info';
+import { DashboardRecommendations } from '@/components/dashboard/dashboard-recommendations';
 import { Loader2, AlertTriangle, TrendingUp } from 'lucide-react';
+
+const SystemComparisonChart = dynamic(
+  () =>
+    import('@/components/dashboard/system-comparison-chart').then(
+      (mod) => mod.SystemComparisonChart
+    ),
+  {
+    loading: () => (
+      <div className="h-80 animate-pulse rounded-xl border bg-muted" />
+    ),
+    ssr: false,
+  }
+);
+
+const EntropyCurve = dynamic(
+  () =>
+    import('@/components/dashboard/entropy-curve').then(
+      (mod) => mod.EntropyCurve
+    ),
+  {
+    loading: () => (
+      <div className="h-64 animate-pulse rounded-xl border bg-muted" />
+    ),
+    ssr: false,
+  }
+);
+
+const LastUploadInfo = dynamic(
+  () =>
+    import('@/components/dashboard/last-upload-info').then(
+      (mod) => mod.LastUploadInfo
+    ),
+  { ssr: false }
+);
 import {
   mapSupabaseReport,
   mapSupabaseBodySystem,
@@ -174,11 +206,6 @@ function DashboardContent() {
 
   const topAgingFactors = systems.slice(0, 5);
   const systemsInPrime = systems.filter((s) => s.agingStage === 'Prime');
-  const nutritionalRecs = recommendations.filter(
-    (r) => r.type === 'nutritional'
-  );
-  const fitnessRecs = recommendations.filter((r) => r.type === 'fitness');
-  const therapyRecs = recommendations.filter((r) => r.type === 'therapy');
 
   return (
     <div className="space-y-8">
@@ -322,50 +349,10 @@ function DashboardContent() {
         </div>
       </div>
 
-      {/* Recommandations */}
-      {recommendations.length > 0 && (
-        <div>
-          <h2 className="mb-6 text-2xl font-bold">
-            {t('dashboard.personalizedRecommendations')}
-          </h2>
-
-          {/* Nutrition */}
-          {nutritionalRecs.length > 0 && (
-            <div className="mb-8">
-              <h3 className="mb-4 text-lg font-semibold">Nutrition</h3>
-              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                {nutritionalRecs.map((rec) => (
-                  <RecommendationCard key={rec.id} recommendation={rec} />
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Fitness */}
-          {fitnessRecs.length > 0 && (
-            <div className="mb-8">
-              <h3 className="mb-4 text-lg font-semibold">Fitness</h3>
-              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                {fitnessRecs.map((rec) => (
-                  <RecommendationCard key={rec.id} recommendation={rec} />
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Therapy */}
-          {therapyRecs.length > 0 && (
-            <div>
-              <h3 className="mb-4 text-lg font-semibold">Thérapies</h3>
-              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                {therapyRecs.map((rec) => (
-                  <RecommendationCard key={rec.id} recommendation={rec} />
-                ))}
-              </div>
-            </div>
-          )}
-        </div>
-      )}
+      <DashboardRecommendations
+        recommendations={recommendations}
+        title={t('dashboard.personalizedRecommendations')}
+      />
 
       {/* Stats footer */}
       <div className="grid gap-4 sm:grid-cols-3">

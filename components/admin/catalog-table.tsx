@@ -10,6 +10,7 @@ import {
 } from '@/components/ui/table';
 import { Switch } from '@/components/ui/switch';
 import { GripVertical } from 'lucide-react';
+import Image from 'next/image';
 import type { BioProduct } from '@/lib/types/marketplace';
 import { cn } from '@/lib/utils';
 
@@ -103,9 +104,11 @@ export function CatalogTable({
                   <TableCell>
                     <div className="flex items-center gap-3">
                       <div className="h-10 w-10 flex-shrink-0 overflow-hidden rounded border">
-                        <img
+                        <Image
                           src={product.image}
                           alt={product.name}
+                          width={40}
+                          height={40}
                           className="h-full w-full object-cover"
                         />
                       </div>

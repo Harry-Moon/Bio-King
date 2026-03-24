@@ -2,6 +2,7 @@
 
 import { AlertTriangle, Award, Info } from 'lucide-react';
 import Link from 'next/link';
+import Image from 'next/image';
 import type { BioProduct } from '@/lib/types/marketplace';
 import { cn } from '@/lib/utils';
 
@@ -37,10 +38,12 @@ export function HeroCard({ product, onReserve }: HeroCardProps) {
 
       {/* Image */}
       <div className="relative h-64 w-full overflow-hidden bg-muted">
-        <img
+        <Image
           src={product.image}
           alt={product.name}
-          className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+          fill
+          className="object-cover transition-transform duration-300 group-hover:scale-105"
+          sizes="(max-width: 768px) 100vw, 66vw"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
       </div>

@@ -1,12 +1,42 @@
 import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
+import localFont from 'next/font/local';
 import './globals.css';
 import { AppLayout } from '@/components/layout/app-layout';
 import { AuthProvider } from '@/components/auth/auth-provider';
 import { LanguageProvider } from '@/lib/i18n/language-context';
 import { ThemeProvider } from '@/lib/theme/theme-context';
 
-const inter = Inter({ subsets: ['latin'] });
+const satoshi = localFont({
+  src: [
+    {
+      path: '../assets/fonts/Satoshi-Light.ttf',
+      weight: '300',
+      style: 'normal',
+    },
+    {
+      path: '../assets/fonts/Satoshi-Regular.ttf',
+      weight: '400',
+      style: 'normal',
+    },
+    {
+      path: '../assets/fonts/Satoshi-Italic.ttf',
+      weight: '400',
+      style: 'italic',
+    },
+    {
+      path: '../assets/fonts/Satoshi-Medium.ttf',
+      weight: '500',
+      style: 'normal',
+    },
+    {
+      path: '../assets/fonts/Satoshi-Black.ttf',
+      weight: '900',
+      style: 'normal',
+    },
+  ],
+  variable: '--font-satoshi',
+  display: 'swap',
+});
 
 export const metadata: Metadata = {
   title: 'BioKing',
@@ -18,16 +48,9 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  // #region agent log
-  if (typeof window === 'undefined') {
-    // Log côté serveur uniquement
-    console.log('[DEBUG] RootLayout rendering on server');
-  }
-  // #endregion
-
   return (
-    <html lang="fr">
-      <body className={inter.className}>
+    <html lang="fr" className={satoshi.variable}>
+      <body className="font-sans">
         <ThemeProvider>
           <AuthProvider>
             <LanguageProvider>

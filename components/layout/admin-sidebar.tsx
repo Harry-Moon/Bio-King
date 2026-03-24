@@ -4,13 +4,14 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
+import Image from 'next/image';
 import {
   Package,
   Users,
-  Dna,
   PanelLeftOpen,
   PanelLeftClose,
   LogOut,
+  BookOpen,
 } from 'lucide-react';
 import { UserMenu } from '@/components/auth/user-menu';
 
@@ -19,6 +20,11 @@ const adminNavItems = [
     label: 'Catalog',
     href: '/admin/catalog',
     icon: Package,
+  },
+  {
+    label: 'Articles',
+    href: '/admin/articles',
+    icon: BookOpen,
   },
   {
     label: 'Users',
@@ -63,20 +69,33 @@ export function AdminSidebar() {
               className="relative flex h-6 w-6 flex-shrink-0 items-center justify-center transition-opacity"
               title={isOpen ? 'Collapse sidebar' : 'Expand sidebar'}
             >
-              <Dna
+              {/* Logo - affiché par défaut, masqué au survol */}
+              <span
                 className={cn(
-                  'h-6 w-6 text-green-500 transition-opacity duration-200',
+                  'relative z-0 flex h-6 w-6 items-center justify-center transition-opacity duration-200',
                   isHovering ? 'opacity-0' : 'opacity-100'
                 )}
-              />
+                aria-hidden
+              >
+                <Image
+                  src="/logo/logo.svg"
+                  alt="BioKing"
+                  width={24}
+                  height={24}
+                  unoptimized
+                  className="h-6 w-6 object-contain"
+                />
+              </span>
+
+              {/* Icône expand/collapse - uniquement au survol, au-dessus du logo */}
               {isHovering && (
-                <>
+                <span className="absolute inset-0 z-10 flex items-center justify-center">
                   {isOpen ? (
-                    <PanelLeftClose className="absolute h-6 w-6 text-green-500 animate-in fade-in duration-200" />
+                    <PanelLeftClose className="h-6 w-6 text-green-500 animate-in fade-in duration-200" />
                   ) : (
-                    <PanelLeftOpen className="absolute h-6 w-6 text-green-500 animate-in fade-in duration-200" />
+                    <PanelLeftOpen className="h-6 w-6 text-green-500 animate-in fade-in duration-200" />
                   )}
-                </>
+                </span>
               )}
             </button>
             {isOpen && (

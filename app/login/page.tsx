@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 import { createClient } from '@/lib/auth/supabase-client';
 import { LogIn, Loader2 } from 'lucide-react';
 
@@ -43,7 +44,15 @@ export default function LoginPage() {
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <div className="w-full max-w-md">
         {/* Logo */}
-        <div className="mb-8 text-center">
+        <div className="mb-8 flex flex-col items-center text-center">
+          <Image
+            src="/logo/logo.svg"
+            alt="BioKing"
+            width={48}
+            height={48}
+            className="mb-4"
+            priority
+          />
           <h1 className="mb-2 text-4xl font-bold">BioKing</h1>
           <p className="text-muted-foreground">Connectez-vous à votre compte</p>
         </div>

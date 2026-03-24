@@ -1,24 +1,37 @@
 'use client';
 
 import { useState, useEffect, useMemo, Suspense } from 'react';
+import nextDynamic from 'next/dynamic';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/components/auth/auth-provider';
 import { HeroCard } from '@/components/marketplace/hero-card';
 import { ProductCard } from '@/components/marketplace/product-card';
-import { ProtocolSidebar } from '@/components/marketplace/protocol-sidebar';
+
+const ProtocolSidebar = nextDynamic(
+  () =>
+    import('@/components/marketplace/protocol-sidebar').then(
+      (mod) => mod.ProtocolSidebar
+    ),
+  { ssr: false }
+);
 import { productCategories } from '@/lib/data/marketplace-products';
 import { getAllProducts } from '@/lib/data/marketplace-products-db';
 import type {
   BioProduct,
   ProductCategory,
+  ProductType,
   UserProtocol,
   ProtocolItem,
   SystemCoverage,
 } from '@/lib/types/marketplace';
 import type { BodySystem } from '@/lib/types/systemage';
-import { Flame, Search, X } from 'lucide-react';
+import { Flame, Search, X, Filter, ChevronDown } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import {
+  calculateProductScore,
+  calculateSystemCoverage,
+} from '@/lib/utils/marketplace-scoring';
 
 /**
  * Page Marketplace Intervention
@@ -34,6 +47,12 @@ function MarketplaceContent() {
 
   // État des filtres
   const [activeFilter, setActiveFilter] = useState<ProductCategory>('all');
+  const [typeFilter, setTypeFilter] = useState<ProductType | 'all'>('all');
+  const [sortBy, setSortBy] = useState<
+    'relevance' | 'price_asc' | 'price_desc'
+  >('relevance');
+  const [filtersOpen, setFiltersOpen] = useState(false);
+  const [sortDropdownOpen, setSortDropdownOpen] = useState(false);
 
   // État de la recherche
   const [searchQuery, setSearchQuery] = useState('');
@@ -161,6 +180,11 @@ function MarketplaceContent() {
       products = products.filter((p) => p.category === activeFilter);
     }
 
+    // Filtre par type
+    if (typeFilter !== 'all') {
+      products = products.filter((p) => p.type === typeFilter);
+    }
+
     // Filtre par recherche
     if (searchQuery.trim()) {
       const query = searchQuery.toLowerCase().trim();
@@ -173,15 +197,21 @@ function MarketplaceContent() {
       );
     }
 
-    // Tri intelligent basé sur les tags et les systèmes corporels
-    products = products.sort((a, b) => {
-      const scoreA = calculateProductScore(a, bodySystems);
-      const scoreB = calculateProductScore(b, bodySystems);
-      return scoreB - scoreA;
-    });
+    // Tri
+    if (sortBy === 'price_asc') {
+      products = [...products].sort((a, b) => a.price - b.price);
+    } else if (sortBy === 'price_desc') {
+      products = [...products].sort((a, b) => b.price - a.price);
+    } else {
+      products = products.sort((a, b) => {
+        const scoreA = calculateProductScore(a, bodySystems);
+        const scoreB = calculateProductScore(b, bodySystems);
+        return scoreB - scoreA;
+      });
+    }
 
     return products;
-  }, [allProducts, activeFilter, bodySystems, searchQuery]);
+  }, [allProducts, activeFilter, typeFilter, bodySystems, searchQuery, sortBy]);
 
   // Séparer Hero et Products (utiliser displayType si disponible, sinon isHero)
   const heroProducts = filteredProducts.filter(
@@ -257,64 +287,276 @@ function MarketplaceContent() {
       {/* Contenu principal */}
       <div className="flex-1 space-y-6">
         {/* Header */}
-        <div className="space-y-4">
-          <div>
-            <h1 className="text-3xl font-bold text-foreground">
-              Marketplace Intervention
-            </h1>
-            <p className="mt-2 text-muted-foreground">
-              Construisez votre protocole de longévité personnalisé.
-            </p>
-          </div>
-
-          {/* Barre de recherche */}
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
-            <input
-              type="text"
-              placeholder="Rechercher un produit, un supplément ou un service..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full rounded-lg border border-border bg-card px-10 py-3 pl-10 pr-4 text-sm text-foreground placeholder:text-muted-foreground focus:border-green-500 focus:outline-none focus:ring-2 focus:ring-green-500/20 transition-all"
-            />
-            {searchQuery && (
-              <button
-                onClick={() => setSearchQuery('')}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
-                aria-label="Effacer la recherche"
-              >
-                <X className="h-4 w-4" />
-              </button>
-            )}
-          </div>
+        <div>
+          <h1 className="text-2xl font-bold text-foreground md:text-3xl">
+            Marketplace Intervention
+          </h1>
+          <p className="mt-1 hidden text-muted-foreground md:mt-2 md:block">
+            Construisez votre protocole de longévité personnalisé.
+          </p>
         </div>
 
-        {/* Barre de Filtres */}
-        <div className="flex flex-wrap gap-2">
-          {productCategories.map((category) => {
-            const isActive = activeFilter === category.value;
-            const isPriority = 'priority' in category && category.priority;
+        {/* Ligne 1 - Search + Filter + Sort */}
+        <div className="flex flex-col gap-4">
+          <div className="flex items-center gap-2">
+            {/* Search */}
+            <div className="relative min-w-0 flex-1">
+              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground md:h-5 md:w-5" />
+              <input
+                type="text"
+                placeholder="Rechercher..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full rounded-lg border border-border bg-card py-2.5 pl-9 pr-9 text-sm text-foreground placeholder:text-muted-foreground focus:border-green-500 focus:outline-none focus:ring-2 focus:ring-green-500/20 md:py-3 md:pl-10 md:pr-10"
+              />
+              {searchQuery && (
+                <button
+                  onClick={() => setSearchQuery('')}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground transition-colors hover:text-foreground"
+                  aria-label="Effacer la recherche"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              )}
+            </div>
 
-            return (
+            {/* Filter */}
+            <div className="relative shrink-0">
               <button
-                key={category.value}
+                onClick={() => {
+                  setFiltersOpen(!filtersOpen);
+                  setSortDropdownOpen(false);
+                }}
+                className={cn(
+                  'flex items-center gap-1.5 rounded-lg border border-border bg-card px-3 py-2.5 text-sm font-medium md:px-4',
+                  filtersOpen
+                    ? 'bg-green-500/15 text-green-600 dark:text-green-400'
+                    : 'text-muted-foreground hover:bg-accent/50'
+                )}
+              >
+                <Filter className="h-4 w-4" />
+                <span className="hidden sm:inline">Filtres</span>
+              </button>
+            </div>
+
+            {/* Sort */}
+            <div className="relative shrink-0">
+              <button
+                onClick={() => {
+                  setSortDropdownOpen(!sortDropdownOpen);
+                  setFiltersOpen(false);
+                }}
+                className="flex items-center gap-1.5 rounded-lg border border-border bg-card px-3 py-2.5 text-sm font-medium text-muted-foreground hover:bg-accent/50 md:px-4"
+              >
+                <ChevronDown
+                  className={cn(
+                    'h-4 w-4 transition-transform',
+                    sortDropdownOpen && 'rotate-180'
+                  )}
+                />
+                <span className="hidden sm:inline">
+                  {sortBy === 'relevance' && 'Pertinence'}
+                  {sortBy === 'price_asc' && 'Prix ↑'}
+                  {sortBy === 'price_desc' && 'Prix ↓'}
+                </span>
+              </button>
+              {sortDropdownOpen && (
+                <>
+                  <div
+                    className="fixed inset-0 z-10"
+                    onClick={() => setSortDropdownOpen(false)}
+                    aria-hidden
+                  />
+                  <div className="absolute right-0 top-full z-20 mt-1 min-w-[160px] rounded-lg border border-border bg-card py-1 shadow-lg">
+                    <button
+                      onClick={() => {
+                        setSortBy('relevance');
+                        setSortDropdownOpen(false);
+                      }}
+                      className={cn(
+                        'w-full px-4 py-2 text-left text-sm',
+                        sortBy === 'relevance'
+                          ? 'bg-green-500/15 text-green-600 dark:text-green-400'
+                          : 'text-muted-foreground hover:bg-accent/50'
+                      )}
+                    >
+                      Pertinence
+                    </button>
+                    <button
+                      onClick={() => {
+                        setSortBy('price_asc');
+                        setSortDropdownOpen(false);
+                      }}
+                      className={cn(
+                        'w-full px-4 py-2 text-left text-sm',
+                        sortBy === 'price_asc'
+                          ? 'bg-green-500/15 text-green-600 dark:text-green-400'
+                          : 'text-muted-foreground hover:bg-accent/50'
+                      )}
+                    >
+                      Prix croissant
+                    </button>
+                    <button
+                      onClick={() => {
+                        setSortBy('price_desc');
+                        setSortDropdownOpen(false);
+                      }}
+                      className={cn(
+                        'w-full px-4 py-2 text-left text-sm',
+                        sortBy === 'price_desc'
+                          ? 'bg-green-500/15 text-green-600 dark:text-green-400'
+                          : 'text-muted-foreground hover:bg-accent/50'
+                      )}
+                    >
+                      Prix décroissant
+                    </button>
+                  </div>
+                </>
+              )}
+            </div>
+          </div>
+
+          {/* Ligne 2 - Catégories (thèmes) : scroll horizontal sur mobile */}
+          <div className="-mx-6 overflow-x-auto overscroll-x-contain px-6 scroll-smooth scrollbar-hide md:mx-0 md:overflow-visible md:px-0">
+            <div className="flex gap-2 md:flex-wrap">
+              {productCategories.map((category) => {
+                const isActive = activeFilter === category.value;
+                const isPriority = 'priority' in category && category.priority;
+
+                return (
+                  <button
+                    key={category.value}
+                    onClick={() =>
+                      setActiveFilter(category.value as ProductCategory)
+                    }
+                    className={cn(
+                      'shrink-0 rounded-full px-3 py-1.5 text-xs font-medium transition-all',
+                      isActive
+                        ? isPriority
+                          ? 'bg-orange-500 text-white'
+                          : 'bg-green-500 text-white'
+                        : 'border border-border bg-card text-muted-foreground hover:bg-accent/50'
+                    )}
+                  >
+                    {isPriority && <Flame className="mr-1 inline h-3 w-3" />}
+                    {category.label}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Panneau Filtres (mobile) - type de produit */}
+          <div
+            className={cn(
+              'grid transition-[grid-template-rows] duration-200 md:!grid-rows-[1fr]',
+              filtersOpen ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'
+            )}
+          >
+            <div className="overflow-hidden md:contents">
+              <div className="flex flex-wrap gap-2 rounded-lg border border-border bg-card/50 p-4 md:hidden">
+                <span className="w-full text-sm font-medium text-muted-foreground">
+                  Type de produit
+                </span>
+                <button
+                  onClick={() => setTypeFilter('all')}
+                  className={cn(
+                    'rounded-lg px-3 py-1.5 text-xs font-medium',
+                    typeFilter === 'all'
+                      ? 'bg-green-500 text-white'
+                      : 'border border-border bg-card'
+                  )}
+                >
+                  Tous
+                </button>
+                <button
+                  onClick={() =>
+                    setTypeFilter(
+                      typeFilter === 'supplement' ? 'all' : 'supplement'
+                    )
+                  }
+                  className={cn(
+                    'rounded-lg px-3 py-1.5 text-xs font-medium',
+                    typeFilter === 'supplement'
+                      ? 'bg-green-500 text-white'
+                      : 'border border-border bg-card'
+                  )}
+                >
+                  Suppléments
+                </button>
+                <button
+                  onClick={() =>
+                    setTypeFilter(typeFilter === 'service' ? 'all' : 'service')
+                  }
+                  className={cn(
+                    'rounded-lg px-3 py-1.5 text-xs font-medium',
+                    typeFilter === 'service'
+                      ? 'bg-green-500 text-white'
+                      : 'border border-border bg-card'
+                  )}
+                >
+                  Services
+                </button>
+                <button
+                  onClick={() =>
+                    setTypeFilter(typeFilter === 'therapy' ? 'all' : 'therapy')
+                  }
+                  className={cn(
+                    'rounded-lg px-3 py-1.5 text-xs font-medium',
+                    typeFilter === 'therapy'
+                      ? 'bg-green-500 text-white'
+                      : 'border border-border bg-card'
+                  )}
+                >
+                  Thérapies
+                </button>
+                <button
+                  onClick={() =>
+                    setTypeFilter(
+                      typeFilter === 'protocol' ? 'all' : 'protocol'
+                    )
+                  }
+                  className={cn(
+                    'rounded-lg px-3 py-1.5 text-xs font-medium',
+                    typeFilter === 'protocol'
+                      ? 'bg-green-500 text-white'
+                      : 'border border-border bg-card'
+                  )}
+                >
+                  Protocoles
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* Desktop: filtre type visible */}
+          <div className="hidden flex-wrap items-center gap-2 md:flex">
+            <span className="text-sm text-muted-foreground">Type :</span>
+            {(
+              [
+                { value: 'all', label: 'Tous' },
+                { value: 'supplement', label: 'Suppléments' },
+                { value: 'service', label: 'Services' },
+                { value: 'therapy', label: 'Thérapies' },
+                { value: 'protocol', label: 'Protocoles' },
+              ] as const
+            ).map(({ value, label }) => (
+              <button
+                key={value}
                 onClick={() =>
-                  setActiveFilter(category.value as ProductCategory)
+                  setTypeFilter(typeFilter === value ? 'all' : value)
                 }
                 className={cn(
-                  'rounded-full px-4 py-2 text-sm font-medium transition-all',
-                  isActive
-                    ? isPriority
-                      ? 'bg-orange-500 text-white'
-                      : 'bg-green-500 text-white'
+                  'rounded-lg px-3 py-1 text-xs font-medium',
+                  typeFilter === value
+                    ? 'bg-green-500 text-white'
                     : 'border border-border bg-card text-muted-foreground hover:bg-accent/50'
                 )}
               >
-                {isPriority && <Flame className="mr-1.5 inline h-3.5 w-3.5" />}
-                {category.label}
+                {label}
               </button>
-            );
-          })}
+            ))}
+          </div>
         </div>
 
         {/* Hero Products */}
@@ -364,104 +606,6 @@ function MarketplaceContent() {
       )}
     </div>
   );
-}
-
-/**
- * Calcule un score de recommandation pour un produit basé sur les systèmes corporels
- */
-function calculateProductScore(
-  product: BioProduct,
-  bodySystems: BodySystem[]
-): number {
-  if (bodySystems.length === 0) return 0;
-
-  let score = 0;
-
-  // Parcourir les tags du produit
-  product.tags.forEach((tag) => {
-    if (!tag.systemTargets || tag.systemTargets.length === 0) return;
-
-    // Vérifier chaque système ciblé
-    tag.systemTargets.forEach((targetSystem) => {
-      const matchingSystem = bodySystems.find(
-        (bs) => bs.systemName === targetSystem
-      );
-
-      if (matchingSystem) {
-        // Plus le système est en retard, plus le score est élevé
-        if (matchingSystem.ageDifference > 5) {
-          score += 10; // Priorité haute
-        } else if (matchingSystem.ageDifference > 0) {
-          score += 5; // Priorité moyenne
-        }
-
-        // Bonus si le système est en stage Accelerated
-        if (matchingSystem.agingStage === 'Accelerated') {
-          score += 5;
-        }
-      }
-    });
-  });
-
-  return score;
-}
-
-/**
- * Calcule la couverture systémique du protocole
- */
-function calculateSystemCoverage(
-  items: ProtocolItem[],
-  bodySystems: BodySystem[]
-): SystemCoverage[] {
-  if (bodySystems.length === 0) {
-    // Mode démo sans données de rapport
-    return [
-      { systemName: 'Inflammation', coverage: 65, priority: true },
-      { systemName: 'Digestif', coverage: 30, priority: false },
-      { systemName: 'Cognitif', coverage: 25, priority: false },
-    ];
-  }
-
-  const coverageMap = new Map<string, number>();
-
-  // Initialiser avec tous les systèmes
-  bodySystems.forEach((system) => {
-    coverageMap.set(system.systemName, 0);
-  });
-
-  // Calculer la couverture basée sur les produits
-  items.forEach((item) => {
-    item.product.tags.forEach((tag) => {
-      if (tag.systemTargets) {
-        tag.systemTargets.forEach((targetSystem) => {
-          const current = coverageMap.get(targetSystem) || 0;
-          // Chaque produit ajoute 20% de couverture (ajustable)
-          coverageMap.set(targetSystem, Math.min(100, current + 20));
-        });
-      }
-    });
-  });
-
-  // Convertir en array avec priorité, trier par priorité puis par couverture
-  return Array.from(coverageMap.entries())
-    .map(([systemName, coverage]) => {
-      const system = bodySystems.find((bs) => bs.systemName === systemName);
-      const priority =
-        system !== undefined && system.ageDifference > 5 && coverage > 0;
-
-      return {
-        systemName,
-        coverage,
-        priority,
-      };
-    })
-    .filter((c) => c.coverage > 0) // Ne garder que les systèmes avec couverture
-    .sort((a, b) => {
-      // Priorité d'abord, puis par couverture décroissante
-      if (a.priority && !b.priority) return -1;
-      if (!a.priority && b.priority) return 1;
-      return b.coverage - a.coverage;
-    });
 }
 
 export default function MarketplacePage() {

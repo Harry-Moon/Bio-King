@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '@/components/auth/auth-provider';
 import { isAdmin } from '@/lib/utils/admin';
 import { AdminSidebar } from './admin-sidebar';
+import { MobileHeader } from './mobile-header';
 import { Loader2 } from 'lucide-react';
 
 interface AdminLayoutProps {
@@ -31,7 +32,8 @@ export function AdminLayout({ children }: AdminLayoutProps) {
   return (
     <div className="flex h-screen overflow-hidden bg-background">
       <AdminSidebar />
-      <main className="flex-1 overflow-y-auto bg-background pb-16 md:pb-0">
+      <MobileHeader />
+      <main className="flex-1 overflow-y-auto bg-background pt-14 pb-16 md:pt-0 md:pb-0">
         <div className="container mx-auto p-6">{children}</div>
       </main>
     </div>

@@ -6,11 +6,10 @@ import { cn } from '@/lib/utils';
 import {
   LayoutDashboard,
   Database,
-  FileText,
-  Trophy,
   User,
-  Upload,
-  ShoppingBag,
+  Store,
+  BookOpen,
+  MessageCircle,
 } from 'lucide-react';
 
 const navItems = [
@@ -20,19 +19,24 @@ const navItems = [
     icon: LayoutDashboard,
   },
   {
-    label: 'Upload',
-    href: '/upload',
-    icon: Upload,
+    label: 'Coach',
+    href: '/coach',
+    icon: MessageCircle,
   },
   {
     label: 'Marketplace',
     href: '/marketplace',
-    icon: ShoppingBag,
+    icon: Store,
   },
   {
-    label: 'Rapports',
-    href: '/reports',
-    icon: FileText,
+    label: 'Learn',
+    href: '/learn',
+    icon: BookOpen,
+  },
+  {
+    label: 'Biomarkers',
+    href: '/data',
+    icon: Database,
   },
   {
     label: 'Profil',

@@ -4,20 +4,18 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
+import Image from 'next/image';
 import {
   LayoutDashboard,
   Database,
-  FileText,
   User,
   Settings,
-  Upload,
-  ChevronLeft,
-  ChevronRight,
-  Dna,
   PanelLeftOpen,
   PanelLeftClose,
-  ShoppingBag,
+  Store,
   ShieldCheck,
+  BookOpen,
+  MessageCircle,
 } from 'lucide-react';
 import { UserMenu } from '@/components/auth/user-menu';
 import { useAuth } from '@/components/auth/auth-provider';
@@ -31,24 +29,24 @@ const navItems = [
     icon: LayoutDashboard,
   },
   {
-    label: 'Upload Report',
-    href: '/upload',
-    icon: Upload,
+    label: 'Coach',
+    href: '/coach',
+    icon: MessageCircle,
   },
   {
     label: 'Marketplace',
     href: '/marketplace',
-    icon: ShoppingBag,
+    icon: Store,
+  },
+  {
+    label: 'Learn',
+    href: '/learn',
+    icon: BookOpen,
   },
   {
     label: 'Biomarkers',
     href: '/data',
     icon: Database,
-  },
-  {
-    label: 'Reports',
-    href: '/reports',
-    icon: FileText,
   },
   {
     label: 'Profile',
@@ -94,23 +92,33 @@ export function Sidebar() {
               className="relative flex h-6 w-6 flex-shrink-0 items-center justify-center transition-opacity"
               title={isOpen ? 'Collapse sidebar' : 'Expand sidebar'}
             >
-              {/* DNA Icon - Hidden on hover */}
-              <Dna
+              {/* Logo - priorité visuelle, masqué au survol pour laisser place à l’action */}
+              <span
                 className={cn(
-                  'h-6 w-6 text-green-500 transition-opacity duration-200',
+                  'relative z-0 flex h-6 w-6 items-center justify-center transition-opacity duration-200',
                   isHovering ? 'opacity-0' : 'opacity-100'
                 )}
-              />
+                aria-hidden
+              >
+                <Image
+                  src="/logo/logo.svg"
+                  alt="BioKing"
+                  width={24}
+                  height={24}
+                  unoptimized
+                  className="h-6 w-6 object-contain"
+                />
+              </span>
 
-              {/* Action Icon - Shown on hover */}
+              {/* Icône expand/collapse - uniquement au survol, derrière le logo en z-index */}
               {isHovering && (
-                <>
+                <span className="absolute inset-0 z-10 flex items-center justify-center">
                   {isOpen ? (
-                    <PanelLeftClose className="absolute h-6 w-6 text-green-500 animate-in fade-in duration-200" />
+                    <PanelLeftClose className="h-6 w-6 text-green-500 animate-in fade-in duration-200" />
                   ) : (
-                    <PanelLeftOpen className="absolute h-6 w-6 text-green-500 animate-in fade-in duration-200" />
+                    <PanelLeftOpen className="h-6 w-6 text-green-500 animate-in fade-in duration-200" />
                   )}
-                </>
+                </span>
               )}
             </button>
 
